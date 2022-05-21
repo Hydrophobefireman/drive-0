@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "allowJs": true,
+    "alwaysStrict": true,
+    "declaration": true,
+    "moduleResolution": "Node",
+    "target": "ESNext",
+    "rootDir": "./",
+    "baseUrl": ".",
+    "jsx": "preserve",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@kit": ["./node_modules/@hydrophobefireman/kit"],
+      "@kit/*": ["./node_modules/@hydrophobefireman/kit/*"]
+    }
+  },
+  "exclude": [
+    ".babelconfig.js",
+    "webpack.config.js",
+    "./scripts/",
+    "build/",
+    "build_static/",
+    "src/ext/",
+    "src/ext/trix.js",
+    "src/ext/trix-core.js"
+  ]
+}

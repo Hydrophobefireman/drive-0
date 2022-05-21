@@ -1,0 +1,9 @@
+[tool.pylint.'MESSAGES CONTROL']
+extension-pkg-whitelist = "pydantic"
+disable = ["invalid-name", 
+            "unspecified-encoding",
+            "missing-module-docstring",
+            "missing-function-docstring",
+            "missing-class-docstring",
+            "wrong-import-order",
+            "ungrouped-imports"]

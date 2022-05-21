@@ -1,0 +1,8 @@
+name = "worker"
+main = "src/index.ts"
+compatibility_date = "2022-05-18"
+
+[[r2_buckets]]
+binding = "B_GALLERY"
+bucket_name = "gallery-v0"
+preview_bucket_name = "gallery-v0-preview"
