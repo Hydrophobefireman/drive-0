@@ -11,7 +11,6 @@ const babel = require("./.babelconfig");
 const uiConfig = require("./ui.config.json");
 const {browserslistToTargets, transform} = require("@parcel/css");
 const browserslist = require("browserslist");
-const WorkboxPlugin = require("workbox-webpack-plugin");
 const mode = process.env.NODE_ENV;
 const isProd = mode === "production";
 const {outputDir, staticFilePrefix, inlineCSS, enableCatom, fonts} = uiConfig;

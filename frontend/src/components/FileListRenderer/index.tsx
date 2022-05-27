@@ -8,13 +8,10 @@ import {useAlerts} from "@hydrophobefireman/kit/alerts";
 import {TextButton} from "@hydrophobefireman/kit/button";
 import {Box} from "@hydrophobefireman/kit/container";
 import {_useHideScrollbar, useClickAway} from "@hydrophobefireman/kit/hooks";
-import {XIcon} from "@hydrophobefireman/kit/icons";
 import {Modal} from "@hydrophobefireman/kit/modal";
 import {useCallback, useRef, useState} from "@hydrophobefireman/ui-lib";
-import {mask, modal} from "@kit/classnames";
 import {Skeleton} from "@kit/skeleton";
 
-import {ObjectView} from "../FilePreview";
 import {Paginate} from "../Paginate";
 import {
   buttonWrapperCls,
@@ -147,36 +144,5 @@ export function FileListRenderer({
         />
       </div>
     </>
-  );
-}
-const viewerCls = css({
-  //@ts-ignore
-  "--kit-modal-min-width": "85vw",
-  height: "95%",
-  zIndex: 1000000,
-});
-
-function Viewer({
-  file,
-  close,
-}: {
-  file: FileListResponse["objects"][0];
-  close(): void;
-}) {
-  return (
-    <Modal onClickOutside={close} onEscape={close} active class={viewerCls}>
-      <Modal.Body>
-        <Box horizontal="right" class={css({width: "100%"})}>
-          <button
-            class={css({padding: ".5rem", pseudo: {":hover": {}}})}
-            aria-label="close"
-            onClick={close}
-          >
-            <XIcon />
-          </button>
-        </Box>
-        <ObjectView obj={file} />
-      </Modal.Body>
-    </Modal>
   );
 }

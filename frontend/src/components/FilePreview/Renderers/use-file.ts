@@ -13,7 +13,7 @@ export function useObjectUrl(file: Blob) {
   return src;
 }
 
-export function useArrayBuffer(file: File) {
+export function useArrayBuffer(file: Blob) {
   const [buf, setBuf] = useState<ArrayBuffer>();
   useEffect(async () => {
     const ab = await blobToArrayBuffer(file);
