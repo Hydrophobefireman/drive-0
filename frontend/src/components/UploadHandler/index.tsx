@@ -28,7 +28,8 @@ const uploaderSheetDesktop = css({
   maxHeight: "80vh",
   overflow: "auto",
   boxShadow: "var(--shadow-elevation-medium)",
-  width: "30%",
+  width: "80%",
+  maxWidth: "500px",
   zIndex: "var(--kit-z-index-major)",
   background: "var(--kit-background)",
 });
@@ -243,6 +244,11 @@ function UploadComponent({
           class={css({
             height: "24px",
             opacity: 0,
+            media: {
+              "(max-width:600px)": {
+                opacity: 1,
+              },
+            },
             transition: "var(--kit-transition)",
           })}
           aria-label={`Delete download status for ${target.fileData.name}`}
