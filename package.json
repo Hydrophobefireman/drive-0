@@ -1,7 +1,7 @@
 {
-  "name": "gallery",
+  "name": "drive",
   "version": "1.0.0",
-  "description": "gallery monorepo",
+  "description": "Drive monorepo",
   "main": "index.js",
   "scripts": {
     "prepare": "husky install"

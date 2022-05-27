@@ -15,7 +15,7 @@ export default function Landing() {
           textTransform: "capitalize",
         })}
       >
-        Gallery
+        Drive
       </Text.h1>
       <Text.p class={css({fontSize: "1.25rem"})}>
         Encrypted Storage Network
