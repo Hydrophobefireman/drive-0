@@ -1,4 +1,5 @@
 import {Context} from "hono";
+
 import {Env, UserType} from "../types";
 import {clean} from "../util/clean";
 import {json} from "../util/json";
@@ -124,7 +125,8 @@ export async function revokeToken(c: Context) {
 }
 function _getTokenFromRequest(c: Context) {
   const {req} = c;
-  const auth = req.headers.get("Authorization") ?? "";
+  const auth =
+    req.headers.get("Authorization") ?? req.headers.get("X-Access-Token");
   if (!auth) {
     throw new Error("Not authenticated");
   }

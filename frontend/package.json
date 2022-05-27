@@ -16,7 +16,7 @@
     "url": "https://github.com/Hydrophobefireman/ui-lib-boilerplate/issues"
   },
   "dependencies": {
-    "@hydrophobefireman/flask-jwt-jskit": "^0.1.11",
+    "@hydrophobefireman/flask-jwt-jskit": "^0.1.12",
     "@hydrophobefireman/j-utils": "^2.1.10",
     "@hydrophobefireman/kit": "^0.0.33",
     "@hydrophobefireman/qwc": "^0.0.6",
