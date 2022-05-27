@@ -1,5 +1,6 @@
+import {json} from "../util/json";
 import {BaseHandler} from "./base-handler";
-export const listPattern = new URLPattern({pathname: "/o/list"});
+
 export class ListHandler extends BaseHandler {
   async handle() {
     console.log("using: ListHandler");
@@ -19,9 +20,9 @@ export class ListHandler extends BaseHandler {
 
     try {
       const listing = await B_GALLERY.list(options);
-      return this.c.json(listing);
+      return json(listing);
     } catch (e) {
-      return this.c.json({error: "unknown error"});
+      return json({error: "unknown error"});
     }
   }
 }

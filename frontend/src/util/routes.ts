@@ -1,25 +1,28 @@
 const BASE = location.href.includes("localhost")
-  ? "http://localhost:5000"
-  : "https://journo-api.herokuapp.com";
+  ? "http://localhost:8787"
+  : "https://r2-cdn.hpfm.dev/";
 
 function getURL(path: string) {
   return new URL(path, BASE).href;
 }
 
-export const loginRoute = getURL("/users/-/login");
-export const registerRoute = getURL("/users/-/register");
-export const refreshTokenRoute = getURL("/users/-/token/refresh");
-export const initialAuthCheckRoute = getURL("/users/-/me");
+export const loginRoute = getURL("/api/-/auth/login");
+export const registerRoute = getURL("/api/-/auth/register");
+export const revokeTokenRoute = getURL("/api/-/auth/revoke-token");
+export const refreshTokenRoute = getURL("/api/-/auth/refresh");
+export const initialAuthCheckRoute = getURL("/api/-/auth/me");
 
-export const getPostsRoute = getURL("/posts/");
-export const getAllPostsRoute = getURL("/posts/all");
-export const createPostRoute = getPostsRoute;
-export const updatePostRoute = (id: string) => getURL(`/posts/${id}`);
-export const deletePostRoute = updatePostRoute;
-export const postContentRoute = updatePostRoute;
-export const uploadRoute = getURL("/uploads");
-export const uploadMetaRoute = (x: string) => {
-  const u = new URL(getURL("/uploads/meta-data"));
-  u.searchParams.set("url", x);
-  return u.href;
-};
+export const listFilesRoute = (u: string) => getURL(`/api/user/${u}/list`);
+export const getUploadTokenRoute = (u: string) =>
+  getURL(`/api/user/${u}/upload-token`);
+
+export const getFileBinaryRoute = (
+  user: string,
+  key: string,
+  filename: string
+) => getURL(`/o/${user}/${key}/${filename}`);
+export const getFileFromKeyRoute = (k: string) => getURL(`/o/${k}`);
+export const uploadFileRoute = getFileBinaryRoute;
+
+export const deleteFileRoute = (user: string) =>
+  getURL(`/o/${user}/batch-delete`);

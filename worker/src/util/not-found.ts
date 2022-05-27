@@ -6,7 +6,7 @@ export function notFoundObject(objectName: string): Response {
       status: "Object not found",
       message: `${objectName} was not found`,
     },
-    {status: 404}
+    404
   );
 }
 
@@ -16,6 +16,6 @@ export function notFound(path: string): Response {
       status: "Not found",
       message: `Requested url '${path}' was not found`,
     },
-    {status: 404}
+    404
   );
 }

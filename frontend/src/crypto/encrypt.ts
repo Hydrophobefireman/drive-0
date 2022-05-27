@@ -1,7 +1,7 @@
-import { EncData, enc, encKey, generateKey } from "./util";
+import {EncData, enc, generateKey} from "./util";
 
-import { API_VERSION } from "./constants";
-import { arrayBufferToBase64 } from "@hydrophobefireman/j-utils";
+import {API_VERSION} from "./constants";
+import {arrayBufferToBase64} from "@hydrophobefireman/j-utils";
 
 export async function encrypt(
   file: ArrayBuffer,
@@ -9,10 +9,10 @@ export async function encrypt(
   additional?: any
 ): Promise<EncData> {
   const salt = crypto.getRandomValues(new Uint8Array(100));
-  const { key, ITER_COUNT } = await generateKey(password, salt);
+  const {key, ITER_COUNT} = await generateKey(password, salt);
   const iv = crypto.getRandomValues(new Uint8Array(50)).buffer;
   const encryptedBuf = await crypto.subtle.encrypt(
-    { name: "AES-GCM", iv },
+    {name: "AES-GCM", iv},
     key,
     file
   );

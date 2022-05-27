@@ -1,7 +1,7 @@
 {
-  "name": "journo",
+  "name": "gallery",
   "version": "1.0.0",
-  "description": "Tracker monorepo",
+  "description": "gallery monorepo",
   "main": "index.js",
   "scripts": {
     "prepare": "husky install"

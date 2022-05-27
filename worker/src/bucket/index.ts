@@ -1,18 +1,13 @@
 import {Hono} from "hono";
 
+import {strictAuth} from "../api/validate";
+import {DeleteHandler} from "./delete-handler";
 import {GetHandler} from "./get-handler";
 import {HeadHandler} from "./head-handler";
-import {ListHandler, listPattern} from "./list-handler";
 import {PostHandler} from "./post-handler";
 import {PutHandler} from "./put-handler";
 
-export {listPattern};
-
 const bucket = new Hono({strict: false});
-
-bucket.get("/list", (c) => {
-  return new ListHandler(c as any).handle();
-});
 
 bucket
   .get("/:user/:key/:filename", (c) => {
@@ -21,11 +16,14 @@ bucket
   .head((c) => {
     return new HeadHandler(c as any).handle();
   })
-  .post((c) => {
+  .post(strictAuth({checkApproval: true}), (c) => {
     return new PostHandler(c as any).handle();
   })
-  .put((c) => {
+  .put(strictAuth({checkApproval: true}), (c) => {
     return new PutHandler(c as any).handle();
   });
+bucket.post("/:user/batch-delete", strictAuth(), (c) => {
+  return new DeleteHandler(c as any).handle();
+});
 
 export {bucket};

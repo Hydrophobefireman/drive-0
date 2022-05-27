@@ -1,4 +1,4 @@
-name = "worker"
+name = "r2"
 main = "src/index.ts"
 compatibility_date = "2022-05-18"
 
@@ -6,3 +6,7 @@ compatibility_date = "2022-05-18"
 binding = "B_GALLERY"
 bucket_name = "gallery-v0"
 preview_bucket_name = "gallery-v0-preview"
+
+kv_namespaces = [
+    { binding = "AUTH", id = "5146104b321949678119c9e09bc8e701", preview_id = "1de9157f13464941b26f19ebe37b7b75" },
+]

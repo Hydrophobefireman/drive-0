@@ -12,7 +12,10 @@ client.setRoutes({
   refreshTokenRoute,
   initialAuthCheckRoute,
 });
-client.onLogout(() => redirect("/login"));
+client.onLogout(() => {
+  sessionStorage.clear();
+  redirect("/");
+});
 
 const {useAuthState, useIsLoggedIn} = client.getHooks();
 

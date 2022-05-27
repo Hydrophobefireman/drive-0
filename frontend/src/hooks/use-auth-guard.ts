@@ -1,19 +1,15 @@
 import {useIsLoggedIn} from "@/util/bridge";
 import {redirect, useEffect} from "@hydrophobefireman/ui-lib";
 
-import {useIsCachedLoggedIn} from "./use-cached-auth";
-
-function _useAuthGuard(cached: boolean, next: string) {
-  const isLoggedIn = cached ? useIsCachedLoggedIn() : useIsLoggedIn();
+function _useAuthGuard(next: string) {
+  const isLoggedIn = useIsLoggedIn();
   useEffect(() => {
     if (!isLoggedIn) {
       return redirect(`/?next=${next}`);
     }
   }, [isLoggedIn]);
+  return isLoggedIn;
 }
 export function useAuthGuard(next: string = "/") {
-  _useAuthGuard(false, next);
+  return _useAuthGuard(next);
 }
-useAuthGuard.cached = function useAuthGuard(next: string = "/") {
-  _useAuthGuard(true, next);
-};

@@ -3,7 +3,6 @@ import type {Context, Next} from "hono";
 type CORSOptions = {
   origin?: string | symbol;
   allowMethods?: string[];
-  allowHeaders?: string[];
   maxAge?: number;
   credentials?: boolean;
   exposeHeaders?: string[];
@@ -13,7 +12,6 @@ export const cors = (options?: CORSOptions) => {
   const defaults: CORSOptions = {
     origin: DYNAMIC_ORIGIN,
     allowMethods: ["GET", "HEAD", "PUT", "POST", "DELETE", "PATCH"],
-    allowHeaders: [],
     exposeHeaders: [],
     maxAge: 86400,
     credentials: true,
@@ -65,12 +63,11 @@ export const cors = (options?: CORSOptions) => {
     }
 
     if (c.req.method === "OPTIONS") {
-      setCorsHeaders();
       c.res = new Response(null, {
-        headers: c.res.headers,
         status: 204,
-        statusText: c.res.statusText,
       });
+      setCorsHeaders();
+      return;
     }
 
     await next();

@@ -28,3 +28,22 @@ button {
   to {
   }
 }
+:root {
+  --kit-label-jump: -75%;
+  --shadow-color: 0deg 0% 65%;
+  --shadow-elevation-low: -0.3px 0.1px 0.5px hsl(var(--shadow-color) / 0),
+    -0.5px 0.3px 0.9px hsl(var(--shadow-color) / 0.22),
+    -1.1px 0.6px 1.9px hsl(var(--shadow-color) / 0.43);
+  --shadow-elevation-medium: -0.3px 0.1px 0.5px hsl(var(--shadow-color) / 0),
+    -1.4px 0.7px 2.3px hsl(var(--shadow-color) / 0.17),
+    -2.7px 1.4px 4.6px hsl(var(--shadow-color) / 0.34),
+    -5.6px 2.9px 9.5px hsl(var(--shadow-color) / 0.51);
+  --shadow-elevation-high: -0.3px 0.1px 0.5px hsl(var(--shadow-color) / 0),
+    -2.8px 1.5px 4.8px hsl(var(--shadow-color) / 0.08),
+    -5px 2.6px 8.5px hsl(var(--shadow-color) / 0.16),
+    -7.3px 3.8px 12.3px hsl(var(--shadow-color) / 0.24),
+    -10.2px 5.3px 17.2px hsl(var(--shadow-color) / 0.31),
+    -14.2px 7.3px 23.9px hsl(var(--shadow-color) / 0.39),
+    -19.7px 10.2px 33.3px hsl(var(--shadow-color) / 0.47),
+    -27.1px 14px 45.8px hsl(var(--shadow-color) / 0.55);
+}

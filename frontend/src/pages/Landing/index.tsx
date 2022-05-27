@@ -15,10 +15,10 @@ export default function Landing() {
           textTransform: "capitalize",
         })}
       >
-        Journo
+        Gallery
       </Text.h1>
       <Text.p class={css({fontSize: "1.25rem"})}>
-        Get started with your daily journals
+        Encrypted Storage Network
       </Text.p>
       <Auth />
     </Box>

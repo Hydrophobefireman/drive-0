@@ -1,6 +1,3 @@
-import {pswKey} from "@/caching/keys";
-import {set} from "@hydrophobefireman/flask-jwt-jskit";
-
 export * from "./string_enc";
 
 const textEncoder = new TextEncoder();
@@ -38,8 +35,4 @@ export async function generateKey(
 export interface EncData {
   encryptedBuf: ArrayBuffer;
   meta: string;
-}
-
-export async function savePwd(pass: string) {
-  return set(pswKey, pass);
 }

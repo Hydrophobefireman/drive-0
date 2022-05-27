@@ -3,9 +3,10 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Journo</title>
+    <title>Gallery</title>
     <meta name="description" content="Journal App" />
     <base href="/" />
+    <link rel="preconnect" href="https://icons.api.hpfm.dev" />
     <%= htmlWebpackPlugin.options.css %>
     <!-- 
       You can use this html file to add your own fonts, 
@@ -20,6 +21,32 @@
     </script>
   </head>
   <body>
+    <template is="custom" custom-element="loading-spinner"
+      ><style>
+        .spinner {
+          margin: auto;
+          height: 50px;
+          width: 50px;
+          border-radius: 50%;
+          animation: rotate 0.8s infinite linear;
+          border: 6px solid var(--spinner-color, var(--kit-theme-fg));
+          border-right-color: var(--spinner-color, var(--kit-theme-fg));
+          border-bottom-color: var(--spinner-color, var(--kit-theme-fg));
+          border-left-color: transparent;
+          transition: 0.3s linear;
+          /* box-sizing: border-box; */
+        }
+        @keyframes rotate {
+          from {
+            transform: rotate(0);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      </style>
+      <div class="spinner"></div
+    ></template>
     <div id="app-mount">
       <noscript>This App uses JavaScript...</noscript>
     </div>

@@ -13,7 +13,9 @@
       "@/*": ["./src/*"],
       "@kit": ["./node_modules/@hydrophobefireman/kit"],
       "@kit/*": ["./node_modules/@hydrophobefireman/kit/*"]
-    }
+    },
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     ".babelconfig.js",
