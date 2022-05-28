@@ -176,6 +176,7 @@ export function FileListRenderer({
       </Box>
       <div style={listState === "deleting" && {display: "none"}} ref={boxRef}>
         <Paginate
+          dualButtons
           buttonClass="kit-button kit-button-secondary"
           buttonWrapperClass={buttonWrapperCls}
           listParentClass={gridRoot}
