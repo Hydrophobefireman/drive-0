@@ -7,24 +7,40 @@ export const gridRoot = css({
   padding: ".5rem",
   gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))",
 });
+export const menuButton = css({
+  transition: "var(--kit-transition)",
+  background: "#00000078",
+  padding: ".25rem",
+  borderRadius: "20px",
+  display: "flex",
+  media: {
+    "(min-width:600px)": {
+      opacity: "0",
+    },
+  },
+});
 export const gridEl = css({
   margin: ".25rem",
   border: "2px solid var(--kit-shade-2)",
   borderRadius: "var(--kit-radius)",
-  padding: ".5rem",
+  paddingTop: ".5rem",
+  paddingBottom: ".5rem",
   boxShadow: "var(--kit-shadow)",
   cursor: "pointer",
   transition: "var(--kit-transition)",
   userSelect: "none",
   position: "relative",
   outline: "3px dotted  transparent",
+  minHeight: "200px",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
   pseudo: {
     "[data-selected]": {outline: "3px dotted"},
     ":hover": {
-      transition: "var(--kit-transition)",
-      backgroundColor: "var(--kit-shade-1)",
       boxShadow: "var(--shadow-elevation-low)",
     },
+    ":hover button": {opacity: "1"},
   },
 });
 export const gridElLoader = [gridEl, css({minHeight: "150px"})].join();
@@ -39,6 +55,18 @@ export const menuActive = css({
   transformOrigin: "top right",
   borderRadius: "var(--kit-radius)",
 });
+
+export const imgPreview = css({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  zIndex: "-1",
+});
+
 export const menuInactive = [
   menuActive,
   css({transform: "scale(0)", opacity: "0"}),

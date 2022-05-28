@@ -29,7 +29,9 @@ import {
   actionButton,
   gridEl,
   gridElDeleteState,
+  imgPreview,
   menuActive,
+  menuButton,
   menuInactive,
   openLinkButton,
 } from "./file-list-renderer.style";
@@ -42,6 +44,7 @@ export interface FileRendererProps {
   isSelected?: boolean;
   accKey: string;
 }
+
 export function FileRenderer({
   obj,
   fetchResource,
@@ -58,10 +61,10 @@ export function FileRenderer({
   function closeMenu() {
     setActive(false);
   }
-  function openMenu(e: JSX.TargetedMouseEvent<HTMLElement>) {
+  function toggleMenu(e: JSX.TargetedMouseEvent<HTMLElement>) {
     if (isSelected) return;
     e.stopPropagation();
-    setActive(true);
+    setActive((x) => !x);
   }
   useClickAway(closeMenu, active && menuRef.current);
 
@@ -116,8 +119,13 @@ export function FileRenderer({
         </a>
       </div>
       <Box horizontal="right">
-        <button aria-label="Menu" disabled={isSelected} onClick={openMenu}>
-          <DotsVerticalIcon />
+        <button
+          aria-label="Menu"
+          class={menuButton}
+          disabled={isSelected}
+          onClick={toggleMenu}
+        >
+          <DotsVerticalIcon color="white" />
         </button>
       </Box>
       {obj.customMetadata.upload.enc ? (
@@ -126,24 +134,33 @@ export function FileRenderer({
           meta={obj.customMetadata.upload}
           url={fileUrl(user.user, obj)}
         />
+      ) : obj.httpMetadata.contentType.includes("image") ? (
+        <div
+          style={{backgroundImage: `url("${fileUrl(user.user, obj)}")`}}
+          class={imgPreview}
+        />
       ) : (
         <Img
           remount
           class={css({display: "block", margin: "auto", objectFit: "cover"})}
           height={100}
           width={100}
-          src={
-            obj.httpMetadata.contentType.includes("image")
-              ? fileUrl(user.user, obj)
-              : `https://icons.api.hpfm.dev/api/vs?mode=mime&name=${encodeURIComponent(
-                  obj.httpMetadata.contentType
-                )}`
-          }
+          src={`https://icons.api.hpfm.dev/api/vs?mode=mime&name=${encodeURIComponent(
+            obj.httpMetadata.contentType
+          )}`}
         />
       )}
 
-      <Text.div align="center" class={css({wordBreak: "break-word"})}>
-        {obj.customMetadata.upload.name}
+      <Text.div
+        color="kit-background"
+        align="center"
+        class={css({
+          padding: ".25rem",
+          wordBreak: "break-word",
+          backdropFilter: "brightness(0.5)",
+        })}
+      >
+        {obj.customMetadata.upload.enc && "🔒"} {obj.customMetadata.upload.name}
       </Text.div>
     </div>
   );
@@ -158,13 +175,14 @@ function EncryptedImagePreview({accKey, meta, url}: EncrProps) {
   const src = useObjectUrl(blob);
 
   return blob && src ? (
-    <Img
-      remount
-      class={css({display: "block", margin: "auto", objectFit: "cover"})}
-      height={100}
-      width={100}
-      src={src}
-    />
+    // <Img
+    //   remount
+    //   class={css({display: "block", margin: "auto", objectFit: "cover"})}
+    //   height={100}
+    //   width={100}
+    //   src={src}
+    // />
+    <div style={{backgroundImage: `url("${src}")`}} class={imgPreview} />
   ) : (
     <loading-spinner class={css({margin: "auto"})} />
   );
