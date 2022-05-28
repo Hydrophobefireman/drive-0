@@ -74,7 +74,7 @@ export class Uploader {
     this.user = user;
     this.onError = onError;
     this.originalFile = originalFile || file;
-    _util.raf(() => _util.raf(() => (this.preview = this._initPreview())));
+    this.preview = this._initPreview();
   }
   private async _initPreview() {
     const isImg = this.originalFile.type.includes("image");

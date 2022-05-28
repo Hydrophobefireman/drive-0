@@ -30,15 +30,15 @@ export function useFileDecrypt(url: string, meta: string, accKey: string) {
       const decryptedData = new Blob([res], {type: dec(accKey)(parsed.type)});
       setBlob(decryptedData);
     })().catch((e) => {
-      show({
-        content: (
-          <div>
-            <div>{e}</div>
-            <div>Could not download and decrypt your file</div>
-          </div>
-        ),
-        type: "error",
-      });
+      // show({
+      //   content: (
+      //     <div>
+      //       <div>{e}</div>
+      //       <div>Could not download and decrypt your file</div>
+      //     </div>
+      //   ),
+      //   type: "error",
+      // });
     });
 
     return () => controller.abort();
