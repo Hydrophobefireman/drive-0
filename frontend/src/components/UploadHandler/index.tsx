@@ -162,9 +162,6 @@ export function UploadHandler({
   );
 }
 const fileName = css({
-  // whiteSpace: "nowrap",
-  // textOverflow: "ellipsis",
-  // overflow: "hidden",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",

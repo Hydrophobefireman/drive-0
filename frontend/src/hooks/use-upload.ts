@@ -6,6 +6,29 @@ import {blobToArrayBuffer} from "@hydrophobefireman/j-utils";
 import {useAlerts} from "@hydrophobefireman/kit/alerts";
 import {useEffect, useRef, useState} from "@hydrophobefireman/ui-lib";
 
+class TaskQueue<T extends () => Promise<void>> {
+  tasks: T[] = [];
+  isWorking = false;
+  async start() {
+    if (this.isWorking) return;
+    this.isWorking = true;
+    if (!this.tasks.length) return;
+    while (this.tasks.length) {
+      // squential
+      await this.tasks.pop()();
+    }
+    this.isWorking = false;
+    // cleanup check
+    this.start();
+  }
+  push(task: T) {
+    this.tasks.push(task);
+    if (!this.isWorking) {
+      this.start();
+    }
+  }
+}
+const queue = new TaskQueue();
 export function useUpload(
   target: UploadTarget,
   user: User,
@@ -68,7 +91,7 @@ export function useUpload(
       metadata = {enc: null, name: target.fileData.name};
     }
     setStatus("in-progress");
-    await uploaderRef.current.begin(metadata);
+    queue.push(() => uploaderRef.current.begin(metadata));
   }, [target.file]);
   return {status, progress, uploader: uploaderRef};
 }
