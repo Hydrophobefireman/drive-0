@@ -179,13 +179,6 @@ function EncryptedImagePreview({accKey, meta, url}: EncrProps) {
   const src = useObjectUrl(blob);
 
   return blob && src ? (
-    // <Img
-    //   remount
-    //   class={css({display: "block", margin: "auto", objectFit: "cover"})}
-    //   height={100}
-    //   width={100}
-    //   src={src}
-    // />
     <div style={{backgroundImage: `url("${src}")`}} class={imgPreview} />
   ) : (
     <loading-spinner class={css({margin: "auto"})} />

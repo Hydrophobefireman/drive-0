@@ -28,10 +28,11 @@ export function useFileDecrypt(
       }
       if (!(ret instanceof ArrayBuffer)) throw new Error("Invalid data");
       const parsed = JSON.parse(meta.enc);
-      const decryptedData = new Blob(
-        [await decrypt({meta: meta.enc, encryptedBuf: ret}, accKey)],
-        {type: dec(accKey)(parsed.type)}
-      );
+      const res = await decrypt({meta: meta.enc, encryptedBuf: ret}, accKey);
+      if (res.error) {
+        return show({content: res.error, type: "error"});
+      }
+      const decryptedData = new Blob([res], {type: dec(accKey)(parsed.type)});
       setBlob(decryptedData);
     })().catch((e) => {
       show({
