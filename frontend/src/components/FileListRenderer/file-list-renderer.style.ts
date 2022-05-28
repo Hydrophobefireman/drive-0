@@ -64,6 +64,7 @@ export const imgPreview = css({
   bottom: 0,
   backgroundSize: "cover",
   backgroundPosition: "center",
+  borderRadius: "var(--kit-radius)",
   zIndex: "-1",
 });
 
