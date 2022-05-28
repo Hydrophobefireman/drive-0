@@ -155,6 +155,10 @@ export function FileRenderer({
         color="kit-background"
         align="center"
         class={css({
+          height: "3rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           padding: ".25rem",
           wordBreak: "break-word",
           backdropFilter: "brightness(0.5)",
