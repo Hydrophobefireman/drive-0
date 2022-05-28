@@ -40,6 +40,8 @@ export class Uploader {
   private progressHook: (completed: number, total: number) => void;
   private onError: (e: ProgressEvent<any>) => void;
   private resRequest: ProgressRequest;
+  public beginCb: () => Promise<void>;
+  cancel: () => void;
   constructor({
     file,
     completionCallback,
@@ -53,14 +55,11 @@ export class Uploader {
     this.user = user;
     this.onError = onError;
   }
-  cancel() {
-    try {
-      this._fetch.controller.abort();
-      this.resRequest.abort();
-    } catch (e) {
-      console.warn(e);
-    }
-    this.onError(null);
+
+  createBeginCb(metadata: Record<string, any>) {
+    if (this.beginCb) return this.beginCb;
+    this.beginCb = () => this.begin(metadata);
+    return this.beginCb;
   }
   begin(metadata: Record<string, any>) {
     return new Promise<void>(async (resolve) => {
@@ -73,7 +72,8 @@ export class Uploader {
           token: string;
         }>["result"]);
         if (error) {
-          throw error;
+          this.onError(error as any);
+          resolve();
         }
         const {token} = data;
 
@@ -97,7 +97,19 @@ export class Uploader {
         });
         this.resRequest.headers(headers);
         this.resRequest.send(this.file);
-      } catch (e) {}
+        this.cancel = () => {
+          try {
+            this._fetch.controller.abort();
+            this.resRequest.abort();
+          } catch (e) {
+            console.warn(e);
+          }
+          this.onError(null);
+          resolve();
+        };
+      } catch (e) {
+        resolve();
+      }
     });
   }
 }

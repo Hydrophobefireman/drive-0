@@ -17,6 +17,7 @@ class TaskQueue<T extends () => Promise<void>> {
       // squential
 
       await this.tasks.pop()();
+      console.log("finished");
     }
     this.isWorking = false;
     // cleanup check
@@ -92,7 +93,7 @@ export function useUpload(
       metadata = {enc: null, name: target.fileData.name};
     }
     setStatus("in-progress");
-    queue.push(() => uploaderRef.current.begin(metadata));
+    queue.push(uploaderRef.current.createBeginCb(metadata));
   }, [target.file]);
   return {status, progress, uploader: uploaderRef};
 }
