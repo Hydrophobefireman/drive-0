@@ -1,7 +1,11 @@
 export class Thumbnail {
   private type: "image" | "video";
   private url: string | null;
-  constructor(private file: Blob, private width = 100, private height = 100) {
+  constructor(
+    private file: Blob,
+    private width: number,
+    private height: number
+  ) {
     const type: "image" | "video" | "unknown" = file.type.includes("image")
       ? "image"
       : file.type.includes("video")
@@ -18,10 +22,15 @@ export class Thumbnail {
     this.url = url;
     return url;
   }
-  private _canvas() {
+  private _canvas(v: HTMLImageElement | HTMLVideoElement) {
     const canvas = document.createElement("canvas");
-    canvas.width = this.width;
-    canvas.height = this.height;
+    const aspect =
+      v instanceof Image
+        ? v.naturalHeight / v.naturalWidth
+        : v.videoHeight / v.videoWidth;
+
+    canvas.width = this.width || this.height / aspect;
+    canvas.height = this.height || this.width * aspect;
     const ctx = canvas.getContext("2d");
     if (ctx == null) throw new Error("");
     return {ctx, canvas};
@@ -30,15 +39,10 @@ export class Thumbnail {
     const img = new Image();
     const prom = new Promise<Blob>((resolve, reject) => {
       img.onload = () => {
-        const {ctx, canvas} = this._canvas();
+        const {ctx, canvas} = this._canvas(img);
         const imgAspect = img.naturalHeight / img.naturalWidth;
-        ctx.drawImage(
-          img,
-          0,
-          0,
-          canvas.width,
-          canvas.height || imgAspect * canvas.width
-        );
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
         canvas.toBlob((b) => {
           if (b == null) return reject(null);
           resolve(b);
@@ -72,15 +76,11 @@ export class Thumbnail {
         );
         video.currentTime = frame;
         await seekedPromise;
-        const {canvas, ctx} = this._canvas();
+        const {canvas, ctx} = this._canvas(video);
         const aspect = video.videoHeight / video.videoWidth;
-        ctx.drawImage(
-          video,
-          0,
-          0,
-          canvas.width,
-          canvas.height || canvas.width * aspect
-        );
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
         canvas.toBlob((b) => {
           if (b == null) return reject(null);
           resolve(b);

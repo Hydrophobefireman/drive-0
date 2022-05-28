@@ -85,7 +85,7 @@ export class Uploader {
           this.originalFile = null;
           return resolve(null);
         }
-        const thumb = new Thumbnail(this.originalFile, 250 * 1.5, null);
+        const thumb = new Thumbnail(this.originalFile, null, 200);
         const blob = await thumb.generate();
         const buf = await blobToArrayBuffer(blob);
         const accKey = get(accountKeyStore);
@@ -98,7 +98,9 @@ export class Uploader {
           }
         ).result;
         this.originalFile = null;
-        if (error) return resolve(null);
+        if (error) {
+          return resolve(null);
+        }
         resolve({id: data.id, meta});
       })
     );
