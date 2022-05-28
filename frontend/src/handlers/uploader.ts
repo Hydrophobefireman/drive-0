@@ -77,27 +77,31 @@ export class Uploader {
     this.preview = this._initPreview();
   }
   private async _initPreview() {
-    const isImg = this.originalFile.type.includes("image");
-    const previewable = isImg || this.originalFile.type.includes("video");
-    if (!previewable) {
-      this.originalFile = null;
-      return null;
-    }
-    const thumb = new Thumbnail(this.originalFile, 250 * 1.5, 200 * 1.5);
-    const blob = await thumb.generate();
-    const buf = await blobToArrayBuffer(blob);
-    const accKey = get(accountKeyStore);
-    const {encryptedBuf, meta} = await encrypt(buf, accKey);
-    const {data, error} = await requests.postBinary<{id: string}>(
-      uploadImagePreviewRoute,
-      encryptedBuf,
-      {
-        "x-upload-metadata": meta,
-      }
-    ).result;
-    this.originalFile = null;
-    if (error) return null;
-    return {id: data.id, meta};
+    return new Promise<PreviewMetadata>((resolve) =>
+      _util.raf(async () => {
+        const isImg = this.originalFile.type.includes("image");
+        const previewable = isImg || this.originalFile.type.includes("video");
+        if (!previewable) {
+          this.originalFile = null;
+          return resolve(null);
+        }
+        const thumb = new Thumbnail(this.originalFile, 250 * 1.5, 200 * 1.5);
+        const blob = await thumb.generate();
+        const buf = await blobToArrayBuffer(blob);
+        const accKey = get(accountKeyStore);
+        const {encryptedBuf, meta} = await encrypt(buf, accKey);
+        const {data, error} = await requests.postBinary<{id: string}>(
+          uploadImagePreviewRoute,
+          encryptedBuf,
+          {
+            "x-upload-metadata": meta,
+          }
+        ).result;
+        this.originalFile = null;
+        if (error) return resolve(null);
+        resolve({id: data.id, meta});
+      })
+    );
   }
   createBeginCb(metadata: Record<string, any>) {
     if (this.beginCb) return this.beginCb;

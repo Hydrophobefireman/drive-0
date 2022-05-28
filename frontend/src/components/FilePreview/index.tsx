@@ -102,7 +102,7 @@ function DecryptionViewer({
   meta,
   onBack,
 }: Omit<ObjectViewProps, "ct">) {
-  const blob = useFileDecrypt(url, meta, accKey);
+  const blob = useFileDecrypt(url, meta.enc, accKey);
   if (!blob) return <loading-spinner />;
   return (
     <Box class={css({height: "95%", width: "98%", margin: "auto"})}>
