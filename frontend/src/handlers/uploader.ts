@@ -60,37 +60,47 @@ export class Uploader {
     } catch (e) {
       console.warn(e);
     }
+    this.onError(null);
   }
-  async begin(metadata: Record<string, any>) {
-    this._fetch = requests.get<{token: string}>(getUploadTokenRoute(this.user));
-    try {
-      const {data, error} = await (this._fetch
-        .result as AbortableFetchResponse<{
-        token: string;
-      }>["result"]);
-      if (error) {
-        throw error;
-      }
-      const {token} = data;
+  begin(metadata: Record<string, any>) {
+    return new Promise<void>(async (resolve) => {
+      this._fetch = requests.get<{token: string}>(
+        getUploadTokenRoute(this.user)
+      );
+      try {
+        const {data, error} = await (this._fetch
+          .result as AbortableFetchResponse<{
+          token: string;
+        }>["result"]);
+        if (error) {
+          throw error;
+        }
+        const {token} = data;
 
-      const uploadUrl = uploadFileRoute(this.user, token, metadata.name);
-      const authHeaders = await getAuthenticationHeaders();
-      const headers = new Headers({
-        "content-type": this.file.type,
-        "x-upload-metadata": JSON.stringify(metadata),
-        ...authHeaders,
-      });
-      this.resRequest = new ProgressRequest(uploadUrl, {
-        onError: this.onError,
-        onComplete: () => this.completionCallback(this),
-        onProgress: (e) => this.progressHook(e.loaded, e.total),
-      });
-      this.resRequest.headers(headers);
-      this.resRequest.send(this.file);
-    } catch (e) {}
+        const uploadUrl = uploadFileRoute(this.user, token, metadata.name);
+        const authHeaders = await getAuthenticationHeaders();
+        const headers = new Headers({
+          "content-type": this.file.type,
+          "x-upload-metadata": JSON.stringify(metadata),
+          ...authHeaders,
+        });
+        this.resRequest = new ProgressRequest(uploadUrl, {
+          onError: (e) => {
+            this.onError(e);
+            resolve(null);
+          },
+          onComplete: () => {
+            this.completionCallback(this);
+            resolve(null);
+          },
+          onProgress: (e) => this.progressHook(e.loaded, e.total),
+        });
+        this.resRequest.headers(headers);
+        this.resRequest.send(this.file);
+      } catch (e) {}
+    });
   }
 }
-
 interface ProgressRequestProps {
   onProgress(e: ProgressEvent): void;
   onComplete(e: ProgressEvent): void;
