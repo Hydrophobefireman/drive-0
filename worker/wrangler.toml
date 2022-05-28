@@ -2,9 +2,9 @@ name = "r2"
 main = "src/index.ts"
 compatibility_date = "2022-05-18"
 
+kv_namespaces = [{ binding = "AUTH", id = "5146104b321949678119c9e09bc8e701" }]
+
 [[r2_buckets]]
 binding = "B_GALLERY"
 bucket_name = "gallery-v0"
 preview_bucket_name = "gallery-v0-preview"
-
-kv_namespaces = [{ binding = "AUTH", id = "5146104b321949678119c9e09bc8e701" }]

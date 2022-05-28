@@ -1,16 +1,11 @@
 import {css} from "catom";
 
-import {FileListResponse, UploadCustomMetadata} from "@/api-types/files";
-import {decrypt} from "@/crypto/decrypt";
-import {dec} from "@/crypto/string_enc";
-import {requests} from "@/util/bridge";
-import {useAlerts} from "@hydrophobefireman/kit/alerts";
-import {Button} from "@hydrophobefireman/kit/button";
+import {UploadCustomMetadata} from "@/api-types/files";
 import {Box} from "@hydrophobefireman/kit/container";
-import {useMount, useResource} from "@hydrophobefireman/kit/hooks";
+import {useMount} from "@hydrophobefireman/kit/hooks";
 import {ArrowLeftIcon} from "@hydrophobefireman/kit/icons";
 import {Text} from "@hydrophobefireman/kit/text";
-import {A, redirect, useEffect, useState} from "@hydrophobefireman/ui-lib";
+import {A, redirect} from "@hydrophobefireman/ui-lib";
 
 import {useFileDecrypt} from "../../hooks/use-file-decrypt";
 import {AudioRenderer, BaseAudio} from "./Renderers/audio-renderer";

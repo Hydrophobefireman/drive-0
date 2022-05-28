@@ -166,7 +166,7 @@ function EncryptedImagePreview({accKey, meta, url}: EncrProps) {
       src={src}
     />
   ) : (
-    <loading-spinner />
+    <loading-spinner class={css({margin: "auto"})} />
   );
 }
 function EncryptedFilePreview({accKey, meta, url}: EncrProps) {
