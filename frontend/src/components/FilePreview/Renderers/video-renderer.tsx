@@ -15,8 +15,8 @@ export function BaseVideo({src, class: cls}: {src: string; class?: string}) {
       src={src || null}
       class={[
         css({
-          maxHeight: "80%",
-          maxWidth: "80%",
+          maxHeight: "65vh",
+          maxWidth: "90vw",
           backgroundColor: "var(--kit-shade-2)",
         }),
         cls,
