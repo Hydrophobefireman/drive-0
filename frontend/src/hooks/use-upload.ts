@@ -11,10 +11,11 @@ class TaskQueue<T extends () => Promise<void>> {
   isWorking = false;
   async start() {
     if (this.isWorking) return;
-    this.isWorking = true;
     if (!this.tasks.length) return;
+    this.isWorking = true;
     while (this.tasks.length) {
       // squential
+
       await this.tasks.pop()();
     }
     this.isWorking = false;

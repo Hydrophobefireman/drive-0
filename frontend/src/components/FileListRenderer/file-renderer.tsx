@@ -136,7 +136,9 @@ export function FileRenderer({
         />
       )}
 
-      <Text.div align="center">{obj.customMetadata.upload.name}</Text.div>
+      <Text.div align="center" class={css({wordBreak: "break-word"})}>
+        {obj.customMetadata.upload.name}
+      </Text.div>
     </div>
   );
 }
