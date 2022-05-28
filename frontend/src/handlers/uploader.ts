@@ -85,7 +85,7 @@ export class Uploader {
           this.originalFile = null;
           return resolve(null);
         }
-        const thumb = new Thumbnail(this.originalFile, 250 * 1.5, 200 * 1.5);
+        const thumb = new Thumbnail(this.originalFile, 250 * 1.5, null);
         const blob = await thumb.generate();
         const buf = await blobToArrayBuffer(blob);
         const accKey = get(accountKeyStore);

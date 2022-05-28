@@ -31,7 +31,14 @@ export class Thumbnail {
     const prom = new Promise<Blob>((resolve, reject) => {
       img.onload = () => {
         const {ctx, canvas} = this._canvas();
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const imgAspect = img.naturalHeight / img.naturalWidth;
+        ctx.drawImage(
+          img,
+          0,
+          0,
+          canvas.width,
+          canvas.height || imgAspect * canvas.width
+        );
         canvas.toBlob((b) => {
           if (b == null) return reject(null);
           resolve(b);
@@ -66,7 +73,14 @@ export class Thumbnail {
         video.currentTime = frame;
         await seekedPromise;
         const {canvas, ctx} = this._canvas();
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const aspect = video.videoHeight / video.videoWidth;
+        ctx.drawImage(
+          video,
+          0,
+          0,
+          canvas.width,
+          canvas.height || canvas.width * aspect
+        );
         canvas.toBlob((b) => {
           if (b == null) return reject(null);
           resolve(b);
