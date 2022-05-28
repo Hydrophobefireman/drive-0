@@ -144,6 +144,11 @@ export function decodeAuth(c: Context): {user: string; is_approved: boolean} {
 
 export async function getUploadToken(c: Context) {
   const {user} = decodeAuth(c);
+  const userData = await (c.env.AUTH as KVNamespace).get<UserType>(
+    _namespace(user),
+    "json"
+  );
+  if (!userData?.is_approved) return json({error: "Unapproved"}, 401);
   return json({
     token: await jwt.sign(
       {user, $exp: Math.floor(Date.now() / 1000) + 24 * (60 * 60)},

@@ -12,6 +12,7 @@ import {ArrowLeftIcon} from "@hydrophobefireman/kit/icons";
 import {Text} from "@hydrophobefireman/kit/text";
 import {A, redirect, useEffect, useState} from "@hydrophobefireman/ui-lib";
 
+import {useFileDecrypt} from "../../hooks/use-file-decrypt";
 import {AudioRenderer, BaseAudio} from "./Renderers/audio-renderer";
 import {BaseImg, ImgRenderer} from "./Renderers/img-renderer";
 import {NotRenderable} from "./Renderers/not-renderable";
@@ -20,7 +21,6 @@ import {BaseText, TextRenderer} from "./Renderers/text-renderer";
 import {Renderer} from "./Renderers/types";
 import {useObjectUrl} from "./Renderers/use-file";
 import {BaseVideo, VideoRenderer} from "./Renderers/video-renderer";
-import {useFileDecrypt} from "./use-file-decrypt";
 
 function getRenderer(f: string, type: "base" | "blob") {
   const blob = type === "blob";
@@ -62,6 +62,7 @@ export interface ObjectViewProps {
   ct: string;
   url: string;
   accKey: string;
+  onBack?(): void;
 }
 function NotAuthenticated() {
   useMount(() => redirect("/"));
@@ -89,44 +90,75 @@ function NoRenderer({url}: {url: string}) {
     </Box>
   );
 }
-export function ObjectView({meta, ct, url, accKey}: ObjectViewProps) {
+export function ObjectView({meta, ct, url, accKey, onBack}: ObjectViewProps) {
   const Renderer = getRenderer(ct, "base") as typeof BaseImg;
-  if (Renderer) return <FileRenderer src={url} Renderer={Renderer} />;
+  if (Renderer)
+    return <FileRenderer onBack={onBack} src={url} Renderer={Renderer} />;
   if (!meta.enc) return <NoRenderer url={url} />;
   if (!accKey) return <NotAuthenticated />;
-  return <DecryptionViewer accKey={accKey} meta={meta} url={url} />;
+  return (
+    <DecryptionViewer accKey={accKey} meta={meta} url={url} onBack={onBack} />
+  );
 }
 
-function DecryptionViewer({url, accKey, meta}: Omit<ObjectViewProps, "ct">) {
+function DecryptionViewer({
+  url,
+  accKey,
+  meta,
+  onBack,
+}: Omit<ObjectViewProps, "ct">) {
   const blob = useFileDecrypt(url, meta, accKey);
   if (!blob) return <loading-spinner />;
   return (
-    <Box class={css({height: "100vh", width: "100vw"})}>
-      <DecryptedFileRenderer file={blob} />
+    <Box class={css({height: "95%", width: "98%", margin: "auto"})}>
+      <DecryptedFileRenderer onBack={onBack} file={blob} />
     </Box>
   );
 }
-function DecryptedFileRenderer({file}: {file: Blob}) {
+function DecryptedFileRenderer({file, onBack}: {file: Blob; onBack(): void}) {
   const src = useObjectUrl(file);
   const Renderer = getRenderer(file.type, "base") as typeof BaseImg;
-  return <FileRenderer src={src} Renderer={Renderer} />;
+  return <FileRenderer src={src} Renderer={Renderer} onBack={onBack} />;
 }
 
-function FileRenderer({src, Renderer}: {src: string; Renderer}) {
+function FileRenderer({
+  src,
+  Renderer,
+  onBack,
+}: {
+  src: string;
+  Renderer;
+  onBack(): void;
+}) {
   return (
     <>
-      <Box class={css({width: "100vw", padding: "2rem"})} horizontal="left">
-        <A
-          href="/app"
-          class={css({
-            transition: "var(--kit-transition)",
-            pseudo: {":hover": {transform: "scale(1.05)"}},
-          })}
-        >
-          <ArrowLeftIcon />
-        </A>
+      <Box
+        class={css({width: "100%", padding: "0", marginTop: "0rem"})}
+        horizontal="left"
+      >
+        {onBack ? (
+          <button
+            onClick={onBack}
+            class={css({
+              transition: "var(--kit-transition)",
+              pseudo: {":hover": {transform: "scale(1.05)"}},
+            })}
+          >
+            <ArrowLeftIcon />
+          </button>
+        ) : (
+          <A
+            href="/app"
+            class={css({
+              transition: "var(--kit-transition)",
+              pseudo: {":hover": {transform: "scale(1.05)"}},
+            })}
+          >
+            <ArrowLeftIcon />
+          </A>
+        )}
       </Box>
-      <Box class={css({height: "100vh", width: "100vw"})}>
+      <Box class={css({height: "100%", width: "100vw"})}>
         <Renderer src={src} />
         <a href={src} target="_blank">
           File URL

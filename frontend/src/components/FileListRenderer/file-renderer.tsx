@@ -1,7 +1,9 @@
 import {css} from "catom";
 
-import {FileListResponse} from "@/api-types/files";
+import {FileListResponse, UploadCustomMetadata} from "@/api-types/files";
+import {dec} from "@/crypto/string_enc";
 import {deleteFile} from "@/handlers/files";
+import {useFileDecrypt} from "@/hooks/use-file-decrypt";
 import {useAuthState} from "@/util/bridge";
 import {fileUrl} from "@/util/file-url";
 import {useAlerts} from "@hydrophobefireman/kit/alerts";
@@ -19,8 +21,9 @@ import {
   TrashIcon,
 } from "@hydrophobefireman/kit/icons";
 import {Text} from "@hydrophobefireman/kit/text";
-import {useEffect, useRef, useState} from "@hydrophobefireman/ui-lib";
+import {useEffect, useMemo, useRef, useState} from "@hydrophobefireman/ui-lib";
 
+import {useObjectUrl} from "../FilePreview/Renderers/use-file";
 import {Img} from "../Img";
 import {
   actionButton,
@@ -37,6 +40,7 @@ export interface FileRendererProps {
   index: number;
   delegate(e: MouseEvent): boolean;
   isSelected?: boolean;
+  accKey: string;
 }
 export function FileRenderer({
   obj,
@@ -44,6 +48,7 @@ export function FileRenderer({
   index,
   delegate,
   isSelected,
+  accKey,
 }: FileRendererProps) {
   const {show} = useAlerts();
   const [user] = useAuthState();
@@ -116,9 +121,10 @@ export function FileRenderer({
         </button>
       </Box>
       {obj.customMetadata.upload.enc ? (
-        <LockClosedIcon
-          class={css({display: "block", margin: "auto"})}
-          size={100}
+        <EncryptedFilePreview
+          accKey={accKey}
+          meta={obj.customMetadata.upload}
+          url={fileUrl(user.user, obj)}
         />
       ) : (
         <Img
@@ -140,5 +146,40 @@ export function FileRenderer({
         {obj.customMetadata.upload.name}
       </Text.div>
     </div>
+  );
+}
+interface EncrProps {
+  url: string;
+  meta: UploadCustomMetadata;
+  accKey: string;
+}
+function EncryptedImagePreview({accKey, meta, url}: EncrProps) {
+  const blob = useFileDecrypt(url, meta, accKey);
+  const src = useObjectUrl(blob);
+
+  return blob && src ? (
+    <Img
+      remount
+      class={css({display: "block", margin: "auto", objectFit: "cover"})}
+      height={100}
+      width={100}
+      src={src}
+    />
+  ) : (
+    <loading-spinner />
+  );
+}
+function EncryptedFilePreview({accKey, meta, url}: EncrProps) {
+  const parsed = useMemo(() => JSON.parse(meta.enc), [meta.enc]);
+  const decr = useMemo(() => dec(accKey), [accKey]);
+  const ct = decr(parsed.type);
+  if (ct.includes("image")) {
+    return <EncryptedImagePreview accKey={accKey} meta={meta} url={url} />;
+  }
+  return (
+    <LockClosedIcon
+      class={css({display: "block", margin: "auto"})}
+      size={100}
+    />
   );
 }

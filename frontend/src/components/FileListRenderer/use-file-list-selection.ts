@@ -11,6 +11,7 @@ export function useFileListSelection(files: FileListResponse) {
     prevClicked.current = null;
     setSelectedIndices({});
   }
+  const [selectedFile, setFile] = useState<FileListResponse["objects"][0]>();
   useEffect(() => {
     clearSelection();
   }, [files]);
@@ -19,7 +20,8 @@ export function useFileListSelection(files: FileListResponse) {
     const i = +(e.currentTarget as any).dataset.index;
     prevClicked.current = i;
     if (!(e.shiftKey || e.ctrlKey)) {
-      loadURL(`/viewer/?key=${encodeURIComponent(files.objects[i].key)}`);
+      setSelectedIndices({});
+      setFile(files.objects[i]);
       return;
     }
     if (current != null /* can be 0 */) {
@@ -43,5 +45,13 @@ export function useFileListSelection(files: FileListResponse) {
     return false;
   }
 
-  return {selectedIndices, clearSelection, delegateClick};
+  return {
+    selectedIndices,
+    clearSelection,
+    delegateClick,
+    selectedFile,
+    closeFile() {
+      setFile(null);
+    },
+  };
 }

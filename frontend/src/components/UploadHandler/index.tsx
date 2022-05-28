@@ -8,7 +8,6 @@ import {
 } from "@/handlers/uploader";
 import {useUpload} from "@/hooks/use-upload";
 import {useAuthState} from "@/util/bridge";
-import {Box} from "@hydrophobefireman/kit/container";
 import {useMount} from "@hydrophobefireman/kit/hooks";
 import {
   CheckCircleIcon,

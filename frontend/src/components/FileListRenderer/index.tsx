@@ -1,9 +1,12 @@
 import {css} from "catom";
+import {useSharedStateValue} from "statedrive";
 
 import {FileListResponse} from "@/api-types/files";
 import {deleteFile} from "@/handlers/files";
+import {accountKeyStore} from "@/store/account-key-store";
 import {useAuthState} from "@/util/bridge";
 import {getEventPath} from "@/util/get-path";
+import {getFileFromKeyRoute} from "@/util/routes";
 import {useAlerts} from "@hydrophobefireman/kit/alerts";
 import {TextButton} from "@hydrophobefireman/kit/button";
 import {Box} from "@hydrophobefireman/kit/container";
@@ -12,6 +15,7 @@ import {Modal} from "@hydrophobefireman/kit/modal";
 import {useCallback, useRef, useState} from "@hydrophobefireman/ui-lib";
 import {Skeleton} from "@kit/skeleton";
 
+import {ObjectView} from "../FilePreview";
 import {Paginate} from "../Paginate";
 import {
   buttonWrapperCls,
@@ -29,13 +33,19 @@ export function FileListRenderer({
   fetchResource(): void;
 }) {
   const [user] = useAuthState();
-
-  const {clearSelection, delegateClick, selectedIndices} =
-    useFileListSelection(files);
+  const accKey = useSharedStateValue(accountKeyStore);
+  const {
+    clearSelection,
+    delegateClick,
+    selectedIndices,
+    selectedFile,
+    closeFile,
+  } = useFileListSelection(files);
 
   const render = useCallback(
     (obj: FileListResponse["objects"][0], i: number) => (
       <FileRenderer
+        accKey={accKey}
         fetchResource={fetchResource}
         index={i}
         obj={obj}
@@ -95,6 +105,37 @@ export function FileListRenderer({
   const hasSelections = selectedIndiceValues.some(Boolean);
   return (
     <>
+      <Modal
+        onClickOutside={closeFile}
+        onEscape={closeFile}
+        active={!!selectedFile}
+        class={css({
+          //@ts-ignore
+          "--kit-modal-min-width": "95vw",
+        })}
+      >
+        {selectedFile && (
+          <Modal.Body>
+            <Modal.Title
+              class={css({
+                margin: "0px",
+                maxWidth: "80%",
+                overflow: "hidden",
+                textOverflow: "clip",
+              })}
+            >
+              {selectedFile.customMetadata.upload.name}
+            </Modal.Title>
+            <ObjectView
+              onBack={closeFile}
+              accKey={accKey}
+              ct={selectedFile.httpMetadata.contentType}
+              meta={selectedFile.customMetadata.upload}
+              url={getFileFromKeyRoute(selectedFile.key)}
+            />
+          </Modal.Body>
+        )}
+      </Modal>
       <Modal active={hasSelections && listState === "delete"}>
         <div ref={modalRef}>
           <Modal.Body>

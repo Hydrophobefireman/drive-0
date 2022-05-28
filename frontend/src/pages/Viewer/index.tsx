@@ -1,16 +1,14 @@
 import {useSharedState} from "statedrive";
 
-import {FileListResponse, UploadCustomMetadata} from "@/api-types/files";
+import {UploadCustomMetadata} from "@/api-types/files";
 import {ObjectView} from "@/components/FilePreview";
 import {GetAccKey} from "@/components/GetAccKey";
 import {headFile} from "@/handlers/files";
 import {accountKeyStore} from "@/store/account-key-store";
 import {fileMetaStore} from "@/store/file-meta-data-store";
 import {useAuthState} from "@/util/bridge";
-import {fileUrl} from "@/util/file-url";
 import {getFileFromKeyRoute} from "@/util/routes";
 import {useAlerts} from "@hydrophobefireman/kit/alerts";
-import {useResource} from "@hydrophobefireman/kit/hooks";
 import {useEffect, useRoute, useState} from "@hydrophobefireman/ui-lib";
 
 export default function Viewer() {

@@ -4,6 +4,7 @@ import {useEffect, useState} from "@hydrophobefireman/ui-lib";
 export function useObjectUrl(file: Blob) {
   const [src, setSrc] = useState<string>();
   useEffect(() => {
+    if (!file) return;
     const url = URL.createObjectURL(file);
     setSrc(url);
     return () => {
