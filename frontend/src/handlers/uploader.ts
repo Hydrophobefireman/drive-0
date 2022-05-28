@@ -58,7 +58,7 @@ export class Uploader {
   private resRequest: ProgressRequest;
   public beginCb: () => Promise<void>;
   private originalFile: Blob;
-  private preview?: Promise<PreviewMetadata>;
+
   cancel: () => void;
   constructor({
     file,
@@ -74,7 +74,6 @@ export class Uploader {
     this.user = user;
     this.onError = onError;
     this.originalFile = originalFile || file;
-    this.preview = this._initPreview();
   }
   private async _initPreview() {
     return new Promise<PreviewMetadata>((resolve) =>
@@ -126,14 +125,14 @@ export class Uploader {
           resolve();
         }
         const {token} = data;
-
+        const preview = this._initPreview();
         const uploadUrl = uploadFileRoute(this.user, token, metadata.name);
         const authHeaders = await getAuthenticationHeaders();
         const headers = new Headers({
           "content-type": this.file.type,
           "x-upload-metadata": JSON.stringify({
             ...metadata,
-            preview: await this.preview,
+            preview: await preview,
           }),
           ...authHeaders,
         });
