@@ -1,11 +1,16 @@
 import {css} from "catom";
 
-import {FileListResponse, UploadCustomMetadata} from "@/api-types/files";
+import {
+  FileListResponse,
+  PreviewMetadata,
+  UploadCustomMetadata,
+} from "@/api-types/files";
 import {dec} from "@/crypto/string_enc";
 import {deleteFile} from "@/handlers/files";
 import {useFileDecrypt} from "@/hooks/use-file-decrypt";
 import {useAuthState} from "@/util/bridge";
 import {fileUrl} from "@/util/file-url";
+import {imagePreviewDownloadRoute} from "@/util/routes";
 import {useAlerts} from "@hydrophobefireman/kit/alerts";
 import {Button} from "@hydrophobefireman/kit/button";
 import {Box} from "@hydrophobefireman/kit/container";
@@ -128,7 +133,13 @@ export function FileRenderer({
           <DotsVerticalIcon color="white" />
         </button>
       </Box>
-      {obj.customMetadata.upload.enc ? (
+      {obj.customMetadata.upload.preview ? (
+        <OptimizedPreview
+          accKey={accKey}
+          preview={obj.customMetadata.upload.preview}
+          user={user.user}
+        />
+      ) : obj.customMetadata.upload.enc ? (
         <EncryptedFilePreview
           accKey={accKey}
           meta={obj.customMetadata.upload}
@@ -174,7 +185,11 @@ interface EncrProps {
   meta: UploadCustomMetadata;
   accKey: string;
 }
-function EncryptedImagePreview({accKey, meta, url}: EncrProps) {
+function EncryptedImagePreview({
+  accKey,
+  meta,
+  url,
+}: Omit<EncrProps, "meta"> & {meta: string}) {
   const blob = useFileDecrypt(url, meta, accKey);
   const src = useObjectUrl(blob);
 
@@ -189,12 +204,30 @@ function EncryptedFilePreview({accKey, meta, url}: EncrProps) {
   const decr = useMemo(() => dec(accKey), [accKey]);
   const ct = decr(parsed.type);
   if (ct.includes("image")) {
-    return <EncryptedImagePreview accKey={accKey} meta={meta} url={url} />;
+    return <EncryptedImagePreview accKey={accKey} meta={meta.enc} url={url} />;
   }
   return (
     <LockClosedIcon
       class={css({display: "block", margin: "auto"})}
       size={100}
+    />
+  );
+}
+
+function OptimizedPreview({
+  accKey,
+  preview,
+  user,
+}: {
+  accKey: string;
+  preview: PreviewMetadata;
+  user: string;
+}) {
+  return (
+    <EncryptedImagePreview
+      accKey={accKey}
+      meta={preview.meta}
+      url={imagePreviewDownloadRoute(user, preview.id)}
     />
   );
 }

@@ -26,3 +26,7 @@ export const uploadFileRoute = getFileBinaryRoute;
 
 export const deleteFileRoute = (user: string) =>
   getURL(`/o/${user}/batch-delete`);
+
+export const uploadImagePreviewRoute = getURL("/o/-/image-previews");
+export const imagePreviewDownloadRoute = (u: string, id: string) =>
+  getURL(`/o/-/image-previews/${u}/${id}`);

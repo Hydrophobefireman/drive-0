@@ -1,4 +1,5 @@
 import {Hono} from "hono";
+
 import {
   getUploadToken,
   getUserData,
@@ -13,12 +14,12 @@ import {authGuard, strictAuth} from "./validate";
 const api = new Hono({strict: false});
 
 api.post("/-/auth/register", async (c) => {
-  const {user} = await c.req.json();
+  const {user} = (await c.req.json()) as any;
   const ret = await register(user, c);
   return ret;
 });
 api.post("/-/auth/login", async (c) => {
-  const {user, password: accountKey} = await c.req.json();
+  const {user, password: accountKey} = (await c.req.json()) as any;
   return login(user, accountKey, c);
 });
 api.get("/-/auth/refresh", (c) => {

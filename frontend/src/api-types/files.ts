@@ -1,6 +1,11 @@
+export interface PreviewMetadata {
+  id: string;
+  meta: string;
+}
 export interface UploadCustomMetadata {
   enc: string;
   name: string;
+  preview?: PreviewMetadata;
 }
 export interface FileListResponse {
   objects: Array<{

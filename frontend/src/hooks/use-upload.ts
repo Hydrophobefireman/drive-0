@@ -76,6 +76,7 @@ export function useUpload(
           progressHook,
           user: user.user,
           onError,
+          originalFile: target.file,
         });
         metadata = {enc: res.meta, name: target.fileData.name};
       } catch (e) {

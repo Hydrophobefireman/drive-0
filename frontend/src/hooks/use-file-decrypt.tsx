@@ -1,4 +1,3 @@
-import {UploadCustomMetadata} from "@/api-types/files";
 import {decrypt} from "@/crypto/decrypt";
 import {dec} from "@/crypto/string_enc";
 import {requests} from "@/util/bridge";
@@ -7,11 +6,7 @@ import {useAlerts} from "@hydrophobefireman/kit/alerts";
 import {useEffect, useState} from "@hydrophobefireman/ui-lib";
 const download = (url: string) => requests.getBinary(url);
 
-export function useFileDecrypt(
-  url: string,
-  meta: UploadCustomMetadata,
-  accKey: string
-) {
+export function useFileDecrypt(url: string, meta: string, accKey: string) {
   const {show} = useAlerts();
   const [blob, setBlob] = useState<Blob>();
   useEffect(() => {
@@ -26,9 +21,9 @@ export function useFileDecrypt(
           type: "error",
         });
       }
-      if (!(ret instanceof ArrayBuffer)) throw new Error("Invalid data");
-      const parsed = JSON.parse(meta.enc);
-      const res = await decrypt({meta: meta.enc, encryptedBuf: ret}, accKey);
+      if (!(ret instanceof ArrayBuffer)) return;
+      const parsed = JSON.parse(meta);
+      const res = await decrypt({meta, encryptedBuf: ret}, accKey);
       if (res.error) {
         return show({content: res.error, type: "error"});
       }

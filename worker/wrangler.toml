@@ -11,3 +11,8 @@ kv_namespaces = [
 binding = "B_GALLERY"
 bucket_name = "gallery-v0"
 preview_bucket_name = "gallery-v0-preview"
+
+[[r2_buckets]]
+binding = "B_PREVIEWS"
+bucket_name = "previews"
+preview_bucket_name = "previews-dev"

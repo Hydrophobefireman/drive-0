@@ -1,5 +1,6 @@
 export interface Env {
   B_GALLERY: R2Bucket;
+  B_PREVIEWS: R2Bucket;
   CHECK: "yes" | "no";
   AUTH: KVNamespace;
   JWT_SIGNING_KEY: string;

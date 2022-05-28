@@ -1,7 +1,22 @@
+import {get} from "statedrive";
+
 import {PendingFileProps} from "@/api-types/PendingFileProps";
+import {PreviewMetadata} from "@/api-types/files";
+import {encrypt} from "@/crypto/encrypt";
+import {accountKeyStore} from "@/store/account-key-store";
+import {Thumbnail} from "@/thumbnail-generator";
 import {requests} from "@/util/bridge";
-import {getUploadTokenRoute, uploadFileRoute} from "@/util/routes";
-import {AbortableFetchResponse, get} from "@hydrophobefireman/flask-jwt-jskit";
+import {
+  getUploadTokenRoute,
+  uploadFileRoute,
+  uploadImagePreviewRoute,
+} from "@/util/routes";
+import {
+  AbortableFetchResponse,
+  get as idbGet,
+} from "@hydrophobefireman/flask-jwt-jskit";
+import {blobToArrayBuffer} from "@hydrophobefireman/j-utils";
+import {_util} from "@hydrophobefireman/kit";
 
 export const FILE_UPLOAD_EVENT_KEY = "r2::file::upload";
 export interface UploadTarget {
@@ -15,6 +30,7 @@ export interface UploaderProps {
   progressHook: Uploader["progressHook"];
   user: string;
   onError: Uploader["onError"];
+  originalFile?: Blob;
 }
 
 const ACCESS_TOKEN = "auth_tokens.access";
@@ -28,8 +44,8 @@ export function _headers(_tokens: {accessToken: string; refreshToken: string}) {
 }
 
 export const getAuthenticationHeaders = async function () {
-  const access = await get<string>(ACCESS_TOKEN);
-  const refresh = await get<string>(REFRESH_TOKEN);
+  const access = await idbGet<string>(ACCESS_TOKEN);
+  const refresh = await idbGet<string>(REFRESH_TOKEN);
   return _headers({accessToken: access, refreshToken: refresh});
 };
 export class Uploader {
@@ -41,6 +57,8 @@ export class Uploader {
   private onError: (e: ProgressEvent<any>) => void;
   private resRequest: ProgressRequest;
   public beginCb: () => Promise<void>;
+  private originalFile: Blob;
+  private preview?: Promise<PreviewMetadata>;
   cancel: () => void;
   constructor({
     file,
@@ -48,14 +66,39 @@ export class Uploader {
     progressHook,
     onError,
     user,
+    originalFile,
   }: UploaderProps) {
     this.file = file;
     this.completionCallback = completionCallback;
     this.progressHook = progressHook;
     this.user = user;
     this.onError = onError;
+    this.originalFile = originalFile || file;
+    _util.raf(() => _util.raf(() => (this.preview = this._initPreview())));
   }
-
+  private async _initPreview() {
+    const isImg = this.originalFile.type.includes("image");
+    const previewable = isImg || this.originalFile.type.includes("video");
+    if (!previewable) {
+      this.originalFile = null;
+      return null;
+    }
+    const thumb = new Thumbnail(this.originalFile, 250 * 1.5, 200 * 1.5);
+    const blob = await thumb.generate();
+    const buf = await blobToArrayBuffer(blob);
+    const accKey = get(accountKeyStore);
+    const {encryptedBuf, meta} = await encrypt(buf, accKey);
+    const {data, error} = await requests.postBinary<{id: string}>(
+      uploadImagePreviewRoute,
+      encryptedBuf,
+      {
+        "x-upload-metadata": meta,
+      }
+    ).result;
+    this.originalFile = null;
+    if (error) return null;
+    return {id: data.id, meta};
+  }
   createBeginCb(metadata: Record<string, any>) {
     if (this.beginCb) return this.beginCb;
     this.beginCb = () => this.begin(metadata);
@@ -71,6 +114,7 @@ export class Uploader {
           .result as AbortableFetchResponse<{
           token: string;
         }>["result"]);
+
         if (error) {
           this.onError(error as any);
           resolve();
@@ -81,7 +125,10 @@ export class Uploader {
         const authHeaders = await getAuthenticationHeaders();
         const headers = new Headers({
           "content-type": this.file.type,
-          "x-upload-metadata": JSON.stringify(metadata),
+          "x-upload-metadata": JSON.stringify({
+            ...metadata,
+            preview: await this.preview,
+          }),
           ...authHeaders,
         });
         this.resRequest = new ProgressRequest(uploadUrl, {
@@ -95,6 +142,7 @@ export class Uploader {
           },
           onProgress: (e) => this.progressHook(e.loaded, e.total),
         });
+
         this.resRequest.headers(headers);
         this.resRequest.send(this.file);
         this.cancel = () => {

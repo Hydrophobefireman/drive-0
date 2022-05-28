@@ -1,6 +1,6 @@
 import {Hono} from "hono";
 
-import {strictAuth} from "../api/validate";
+import {authGuard, strictAuth} from "../api/validate";
 import {DeleteHandler} from "./delete-handler";
 import {GetHandler} from "./get-handler";
 import {HeadHandler} from "./head-handler";
@@ -26,4 +26,10 @@ bucket.post("/:user/batch-delete", strictAuth(), (c) => {
   return new DeleteHandler(c as any).handle();
 });
 
+bucket.post("/-/image-previews", authGuard(), (c) => {
+  return new PutHandler(c as any).preview();
+});
+bucket.get("/-/image-previews/:u/:id", authGuard(), (c) => {
+  return new GetHandler(c as any).getPreview();
+});
 export {bucket};

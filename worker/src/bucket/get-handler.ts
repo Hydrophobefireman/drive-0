@@ -1,22 +1,38 @@
+import {decodeAuth} from "../auth";
 import {notFoundObject} from "../util/not-found";
 import {parseRange} from "../util/parse-range";
 import {BaseHandler} from "./base-handler";
-import {createObjectName} from "./util";
+import {createObjectName, getPreviewKey} from "./util";
 
-export class GetHandler extends BaseHandler<"user" | "key" | "filename"> {
+export class GetHandler extends BaseHandler<
+  "user" | "key" | "filename" | "id"
+> {
+  public async getPreview() {
+    const {
+      env: {B_PREVIEWS},
+    } = this.c;
+    const {id} = this.c.req.param();
+    const {user} = decodeAuth(this.c as any);
+    const pk = getPreviewKey(user, id);
+    const object = await B_PREVIEWS.get(pk, {onlyIf: this.c.req.headers});
+    if (object == null) return notFoundObject(pk);
+    const headers = new Headers();
+    object.writeHttpMetadata(headers);
+    headers.set("etag", object.httpEtag);
+    headers.set("x-file-meta", object.customMetadata.upload);
+    headers.set("cache-control", "max-age=31536000, immutable");
+    const status = object.body ? 200 : 304;
+    return new Response(object.body, {
+      status,
+      headers,
+    });
+  }
   public async handle() {
-    let cache = caches.default;
     console.log("using GetHandler");
     const {
       req,
       env: {B_GALLERY},
     } = this.c;
-    const match = await cache.match(req as Request);
-    if (match) {
-      console.log("cache-hit");
-      match.headers.set("x-r2cdn-cache", "HIT");
-      return match;
-    }
 
     let range = parseRange(req.headers.get("range"));
     const {filename, key, user} = this.c.req.param();
@@ -50,8 +66,6 @@ export class GetHandler extends BaseHandler<"user" | "key" | "filename"> {
       status,
       headers,
     });
-    ret.headers.set("x-r2cdn-cache", "MISS");
-    if (status !== 304) await cache.put(req as Request, ret.clone());
     return ret;
   }
 }
