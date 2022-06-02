@@ -3,8 +3,7 @@ import {dec} from "@/crypto/string_enc";
 import {requests} from "@/util/bridge";
 import {_util} from "@hydrophobefireman/kit";
 import {useAlerts} from "@hydrophobefireman/kit/alerts";
-import {useEffect, useState} from "@hydrophobefireman/ui-lib";
-const download = (url: string) => requests.getBinary(url);
+import {useCallback, useEffect, useState} from "@hydrophobefireman/ui-lib";
 
 export const previewCache = new Map<string, Blob>();
 export function useFileDecrypt({
@@ -20,6 +19,14 @@ export function useFileDecrypt({
 }) {
   const {show} = useAlerts();
   const [blob, setBlob] = useState<Blob>();
+  const [progress, setProgress] = useState(0);
+  const download = useCallback(
+    (url: string) =>
+      requests.getBinaryStram(url, {}, {}, ({received, total}) =>
+        setProgress(received / total)
+      ),
+    [url]
+  );
   useEffect(() => {
     const key = `${url}::${meta}::${accKey}`;
     if (cache && previewCache.has(key)) {
@@ -27,6 +34,7 @@ export function useFileDecrypt({
       return;
     }
     setBlob(null);
+
     const {controller, result} = download(url);
 
     (async () => {
@@ -52,5 +60,5 @@ export function useFileDecrypt({
 
     return () => controller.abort();
   }, [url]);
-  return {blob};
+  return {blob, progress};
 }

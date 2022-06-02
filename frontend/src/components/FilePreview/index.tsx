@@ -8,6 +8,7 @@ import {Text} from "@hydrophobefireman/kit/text";
 import {A, redirect} from "@hydrophobefireman/ui-lib";
 
 import {useFileDecrypt} from "../../hooks/use-file-decrypt";
+import {DelayedRender} from "../DelayedRender";
 import {AudioRenderer, BaseAudio} from "./Renderers/audio-renderer";
 import {BaseImg, ImgRenderer} from "./Renderers/img-renderer";
 import {NotRenderable} from "./Renderers/not-renderable";
@@ -102,8 +103,40 @@ function DecryptionViewer({
   meta,
   onBack,
 }: Omit<ObjectViewProps, "ct">) {
-  const {blob} = useFileDecrypt({url, meta: meta.enc, accKey});
-  if (!blob) return <loading-spinner />;
+  const {blob, progress} = useFileDecrypt({url, meta: meta.enc, accKey});
+  if (!blob)
+    return (
+      <DelayedRender time={500}>
+        <div
+          class={css({
+            transition: "var(--kit-transition)",
+            transformOrigin: "left",
+            width: "100%",
+            maxWidth: "500px",
+            margin: "auto",
+            borderRadius: "55px",
+            borderColor: "transparent",
+            background: "#ff76f936",
+            height: "10px",
+          })}
+        >
+          <div
+            style={{transform: `scaleX(${progress})`}}
+            class={css({
+              transition: "var(--kit-transition)",
+              transformOrigin: "left",
+              width: "100%",
+              maxWidth: "500px",
+              margin: "auto",
+              borderRadius: "55px",
+              borderColor: "transparent",
+              background: "var(--kit-theme-fg)",
+              height: "10px",
+            })}
+          />
+        </div>
+      </DelayedRender>
+    );
   return (
     <Box class={css({height: "95%", width: "98%", margin: "auto"})}>
       <DecryptedFileRenderer onBack={onBack} file={blob} />
