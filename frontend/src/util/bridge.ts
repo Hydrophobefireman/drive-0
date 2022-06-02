@@ -1,6 +1,7 @@
 import {set} from "statedrive";
 
 import {User} from "@/api-types/user";
+import {previewCache} from "@/hooks/use-file-decrypt";
 import {accountKeyStore} from "@/store/account-key-store";
 import {fileMetaStore} from "@/store/file-meta-data-store";
 import {uploadJobStore} from "@/store/upload-job-store";
@@ -22,6 +23,7 @@ client.onLogout(() => {
   set(uploadJobStore, null);
   set(accountKeyStore, null);
   sessionStorage.clear();
+  previewCache.clear();
   redirect("/");
 });
 

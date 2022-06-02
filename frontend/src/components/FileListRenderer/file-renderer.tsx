@@ -190,7 +190,7 @@ function EncryptedImagePreview({
   meta,
   url,
 }: Omit<EncrProps, "meta"> & {meta: string}) {
-  const blob = useFileDecrypt(url, meta, accKey);
+  const {blob} = useFileDecrypt({url, meta, accKey, cache: true});
   const src = useObjectUrl(blob);
 
   return blob && src ? (

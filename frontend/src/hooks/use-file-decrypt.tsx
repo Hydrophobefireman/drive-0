@@ -6,10 +6,26 @@ import {useAlerts} from "@hydrophobefireman/kit/alerts";
 import {useEffect, useState} from "@hydrophobefireman/ui-lib";
 const download = (url: string) => requests.getBinary(url);
 
-export function useFileDecrypt(url: string, meta: string, accKey: string) {
+export const previewCache = new Map<string, Blob>();
+export function useFileDecrypt({
+  accKey,
+  meta,
+  url,
+  cache,
+}: {
+  url: string;
+  meta: string;
+  accKey: string;
+  cache?: boolean;
+}) {
   const {show} = useAlerts();
   const [blob, setBlob] = useState<Blob>();
   useEffect(() => {
+    const key = `${url}::${meta}::${accKey}`;
+    if (cache && previewCache.has(key)) {
+      setBlob(previewCache.get(key));
+      return;
+    }
     setBlob(null);
     const {controller, result} = download(url);
 
@@ -28,20 +44,13 @@ export function useFileDecrypt(url: string, meta: string, accKey: string) {
         return show({content: res.error, type: "error"});
       }
       const decryptedData = new Blob([res], {type: dec(accKey)(parsed.type)});
+      if (cache) {
+        previewCache.set(key, decryptedData);
+      }
       setBlob(decryptedData);
-    })().catch((e) => {
-      // show({
-      //   content: (
-      //     <div>
-      //       <div>{e}</div>
-      //       <div>Could not download and decrypt your file</div>
-      //     </div>
-      //   ),
-      //   type: "error",
-      // });
-    });
+    })().catch((e) => {});
 
     return () => controller.abort();
   }, [url]);
-  return blob;
+  return {blob};
 }

@@ -1,6 +1,6 @@
 import {Hono} from "hono";
-import {api} from "./api";
 
+import {api} from "./api";
 import {bucket} from "./bucket";
 import {cors} from "./cors";
 import {json} from "./util/json";
