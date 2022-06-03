@@ -83,6 +83,9 @@ export const actionButton = css({
     ":hover": {
       background: "var(--kit-shade-2)",
     },
+    ":focus-visible": {
+      background: "var(--kit-shade-2)",
+    },
   },
 });
 export const gridElDeleteState = [
