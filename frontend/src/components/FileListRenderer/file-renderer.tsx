@@ -102,6 +102,16 @@ export function FileRenderer({
       onClick={delegate}
       class={fstate === "deleting" ? gridElDeleteState : gridEl}
     >
+      <Box horizontal="right">
+        <button
+          aria-label="Menu"
+          class={menuButton}
+          disabled={isSelected}
+          onClick={toggleMenu}
+        >
+          <DotsVerticalIcon color="white" />
+        </button>
+      </Box>
       <div ref={menuRef} class={active ? menuActive : menuInactive}>
         <Button
           tabIndex={active ? 0 : -1}
@@ -125,16 +135,6 @@ export function FileRenderer({
           <span>Open in new tab</span>
         </a>
       </div>
-      <Box horizontal="right">
-        <button
-          aria-label="Menu"
-          class={menuButton}
-          disabled={isSelected}
-          onClick={toggleMenu}
-        >
-          <DotsVerticalIcon color="white" />
-        </button>
-      </Box>
       {obj.customMetadata.upload.preview ? (
         <OptimizedPreview
           accKey={accKey}

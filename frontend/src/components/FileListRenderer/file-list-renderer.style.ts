@@ -13,6 +13,11 @@ export const menuButton = css({
   padding: ".25rem",
   borderRadius: "20px",
   display: "flex",
+  pseudo: {
+    ":focus-visible": {
+      opacity: 1,
+    },
+  },
   media: {
     "(min-width:600px)": {
       opacity: "0",
