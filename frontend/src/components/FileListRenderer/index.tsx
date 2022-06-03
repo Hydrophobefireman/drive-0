@@ -165,6 +165,7 @@ export function FileListRenderer({
         class={css({padding: "1rem"})}
       >
         <TextButton
+          tabIndex={hasSelections ? 0 : -1}
           onClick={handleDelete}
           style={!hasSelections && {opacity: 0}}
           class={css({transition: "var(--kit-transition)"})}

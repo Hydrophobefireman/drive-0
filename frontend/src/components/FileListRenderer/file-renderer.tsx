@@ -104,6 +104,7 @@ export function FileRenderer({
     >
       <div ref={menuRef} class={active ? menuActive : menuInactive}>
         <Button
+          tabIndex={active ? 0 : -1}
           onClick={handleDelete}
           variant="custom"
           class={actionButton}
@@ -113,6 +114,7 @@ export function FileRenderer({
           Delete
         </Button>
         <a
+          tabIndex={active ? 0 : -1}
           onClick={(e) => e.stopPropagation()}
           href={`/viewer/?key=${encodeURIComponent(obj.key)}`}
           target="_blank"
