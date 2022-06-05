@@ -14,13 +14,9 @@ class TaskQueue<T extends () => Promise<void>> {
     if (!this.tasks.length) return;
     this.isWorking = true;
     while (this.tasks.length) {
-      // squential
-
       await this.tasks.pop()();
-      console.log("finished");
     }
     this.isWorking = false;
-    // cleanup check
     this.start();
   }
   push(task: T) {
@@ -62,10 +58,14 @@ export function useUpload(
     if (target.fileData.shouldEncrypt) {
       setStatus("encrypting");
       try {
+        const encr = enc(accountKey);
         const res = await encrypt(
           await blobToArrayBuffer(target.file),
           accountKey,
-          {type: enc(accountKey)(target.file.type)}
+          {
+            type: encr(target.file.type),
+            tags: encr(JSON.stringify(target.fileData.tags)),
+          }
         );
         const bin = new Blob([res.encryptedBuf], {
           type: "application/octet-stream",

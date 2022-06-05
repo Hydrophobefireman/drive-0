@@ -2,21 +2,26 @@ import "@kit/styles";
 
 // javascript is supported
 import "./App.css";
+import "./init-spinner";
 
+import {get, set} from "@hydrophobefireman/flask-jwt-jskit";
+import {useMount} from "@hydrophobefireman/kit/hooks";
 import {render, useState} from "@hydrophobefireman/ui-lib";
 
 import {Router} from "./_router";
 import {DelayedRender} from "./components/DelayedRender";
+import {
+  ACCOUNT_SESSION_STORAGE_KEY,
+  accountKeyStore,
+} from "./store/account-key-store";
 import {client} from "./util/bridge";
-import {useMount} from "@hydrophobefireman/kit/hooks";
-
-import "./init-spinner";
 
 function AppLoader() {
-  const [synced, set] = useState(false);
+  const [synced, setSynced] = useState(false);
   useMount(async () => {
     await client.syncWithServer();
-    set(true);
+    set(accountKeyStore, (await get(ACCOUNT_SESSION_STORAGE_KEY)) || null);
+    setSynced(true);
   });
   if (synced) return <App />;
   return <DelayedRender time={1000}>Loading...</DelayedRender>;

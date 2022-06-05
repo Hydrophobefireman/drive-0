@@ -1,10 +1,7 @@
 import {css} from "catom";
-import {useSetSharedState, useSharedState} from "statedrive";
 
-import {
-  ACCOUNT_SESSION_STORAGE_KEY,
-  accountKeyStore,
-} from "@/store/account-key-store";
+import {ACCOUNT_SESSION_STORAGE_KEY} from "@/store/account-key-store";
+import {set} from "@hydrophobefireman/flask-jwt-jskit";
 import {TextButton} from "@hydrophobefireman/kit/button";
 import {Checkbox, Input, useCheckbox} from "@hydrophobefireman/kit/input";
 import {Modal} from "@hydrophobefireman/kit/modal";
@@ -28,7 +25,7 @@ export function GetAccKey({setKey}: {setKey(k: string): void}) {
           onSubmit={() => {
             setKey(localKey);
             if (checked) {
-              sessionStorage.setItem(ACCOUNT_SESSION_STORAGE_KEY, localKey);
+              set(ACCOUNT_SESSION_STORAGE_KEY, localKey);
             }
           }}
         >
@@ -45,7 +42,7 @@ export function GetAccKey({setKey}: {setKey(k: string): void}) {
             type="password"
           />
           <Checkbox onCheck={toggle} checked={checked}>
-            Save my key for this session
+            Save my key
           </Checkbox>
           <TextButton
             class={css({
