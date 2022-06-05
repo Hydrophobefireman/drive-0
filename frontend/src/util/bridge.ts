@@ -5,7 +5,7 @@ import {previewCache} from "@/hooks/use-file-decrypt";
 import {accountKeyStore} from "@/store/account-key-store";
 import {fileMetaStore} from "@/store/file-meta-data-store";
 import {uploadJobStore} from "@/store/upload-job-store";
-import {Bridge} from "@hydrophobefireman/flask-jwt-jskit";
+import {Bridge, clear} from "@hydrophobefireman/flask-jwt-jskit";
 import {redirect} from "@hydrophobefireman/ui-lib";
 
 import {initialAuthCheckRoute, loginRoute, refreshTokenRoute} from "./routes";
@@ -18,12 +18,13 @@ client.setRoutes({
   refreshTokenRoute,
   initialAuthCheckRoute,
 });
-client.onLogout(() => {
+client.onLogout(async () => {
   set(fileMetaStore, null);
   set(uploadJobStore, null);
   set(accountKeyStore, null);
   sessionStorage.clear();
   previewCache.clear();
+  await clear();
   redirect("/");
 });
 
