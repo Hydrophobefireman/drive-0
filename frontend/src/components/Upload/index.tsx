@@ -59,7 +59,7 @@ export function Upload() {
   function handleConfirm(f: File[]) {
     if (!f || !f.length || !user?.user) return;
     setPendingFiles((x: Map<File, PendingFileProps>) => {
-      f.forEach(($) => x.set($, {shouldEncrypt: true, name: $.name}));
+      f.forEach(($) => x.set($, {shouldEncrypt: true, name: $.name, tags: []}));
       return x;
     });
   }

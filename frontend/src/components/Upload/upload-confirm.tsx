@@ -1,13 +1,15 @@
-import {PendingFileProps} from "../../api-types/PendingFileProps";
 import {css} from "catom";
-import {Modal} from "@hydrophobefireman/kit/modal";
-import {FilePreview} from "../FilePreview";
+
+import {TextButton} from "@hydrophobefireman/kit/button";
 import {Box} from "@hydrophobefireman/kit/container";
 import {LockClosedIcon, LockOpenIcon} from "@hydrophobefireman/kit/icons";
 import {Switch} from "@hydrophobefireman/kit/input";
+import {Modal} from "@hydrophobefireman/kit/modal";
 import {Text} from "@hydrophobefireman/kit/text";
 import {useEffect, useState} from "@hydrophobefireman/ui-lib";
-import {TextButton} from "@hydrophobefireman/kit/button";
+
+import {PendingFileProps} from "../../api-types/PendingFileProps";
+import {FilePreview} from "../FilePreview";
 
 const fileModal = css({
   padding: "1rem",
@@ -71,7 +73,11 @@ export function UploadConfirm({
                 const {checked} = e.currentTarget as HTMLInputElement;
                 const tmp = new Map(files);
                 for (const [k, v] of tmp) {
-                  tmp.set(k, {name: v.name, shouldEncrypt: checked});
+                  tmp.set(k, {
+                    name: v.name,
+                    shouldEncrypt: checked,
+                    tags: v.tags,
+                  });
                 }
                 setFiles(tmp);
               }}
@@ -118,6 +124,7 @@ function FileEncryptionPrefs({
     updateFile(file, {
       name: fileInfo.name,
       shouldEncrypt: checked,
+      tags: [],
     });
   }
   useEffect(() => {
@@ -127,6 +134,7 @@ function FileEncryptionPrefs({
     updateFile(file, {
       name: value,
       shouldEncrypt: fileInfo.shouldEncrypt,
+      tags: fileInfo.tags,
     });
   }, [value]);
   return (
