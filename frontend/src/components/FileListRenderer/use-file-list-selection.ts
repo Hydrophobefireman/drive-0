@@ -11,7 +11,10 @@ export function useFileListSelection(files: FileListResponse) {
     prevClicked.current = null;
     setSelectedIndices({});
   }
-  const [selectedFile, setFile] = useState<FileListResponse["objects"][0]>();
+  const [file, setFile] = useState<{
+    selectedFile: FileListResponse["objects"][0];
+    selectedFileIndex: number;
+  }>({selectedFile: null, selectedFileIndex: null});
   useEffect(() => {
     clearSelection();
   }, [files]);
@@ -21,7 +24,7 @@ export function useFileListSelection(files: FileListResponse) {
     prevClicked.current = i;
     if (!(e.shiftKey || e.ctrlKey)) {
       setSelectedIndices({});
-      setFile(files.objects[i]);
+      setFile({selectedFile: files.objects[i], selectedFileIndex: i});
       return;
     }
     if (current != null /* can be 0 */) {
@@ -49,9 +52,31 @@ export function useFileListSelection(files: FileListResponse) {
     selectedIndices,
     clearSelection,
     delegateClick,
-    selectedFile,
+    openNextFile() {
+      const curr = file?.selectedFileIndex;
+      if (file && curr < files.objects.length - 1) {
+        const next = curr + 1;
+        setSelectedIndices({});
+        setFile({
+          selectedFile: files.objects[next],
+          selectedFileIndex: next,
+        });
+      }
+    },
+    openPreviousFile() {
+      const curr = file?.selectedFileIndex;
+      if (file && curr > 0) {
+        setSelectedIndices({});
+        const next = curr - 1;
+        setFile({
+          selectedFile: files.objects[next],
+          selectedFileIndex: next,
+        });
+      }
+    },
+    file,
     closeFile() {
-      setFile(null);
+      setFile({selectedFile: null, selectedFileIndex: null});
     },
   };
 }

@@ -11,6 +11,7 @@ import {useAlerts} from "@hydrophobefireman/kit/alerts";
 import {TextButton} from "@hydrophobefireman/kit/button";
 import {Box} from "@hydrophobefireman/kit/container";
 import {_useHideScrollbar, useClickAway} from "@hydrophobefireman/kit/hooks";
+import {ChevronLeftIcon} from "@hydrophobefireman/kit/icons";
 import {Modal} from "@hydrophobefireman/kit/modal";
 import {Select} from "@hydrophobefireman/kit/select";
 import {useCallback, useRef, useState} from "@hydrophobefireman/ui-lib";
@@ -22,9 +23,17 @@ import {
   buttonWrapperCls,
   gridElLoader,
   gridRoot,
+  viewerControlButton,
 } from "./file-list-renderer.style";
 import {FileRenderer} from "./file-renderer";
 import {useFileListSelection} from "./use-file-list-selection";
+
+const rendedrCountOptions = [
+  {value: 10},
+  {value: 15},
+  {value: 20},
+  {value: 50},
+];
 
 export function FileListRenderer({
   files,
@@ -39,8 +48,10 @@ export function FileListRenderer({
     clearSelection,
     delegateClick,
     selectedIndices,
-    selectedFile,
+    file: {selectedFile, selectedFileIndex},
     closeFile,
+    openNextFile,
+    openPreviousFile,
   } = useFileListSelection(files);
 
   const render = useCallback(
@@ -129,13 +140,29 @@ export function FileListRenderer({
             >
               {selectedFile.customMetadata.upload.name}
             </Modal.Title>
-            <ObjectView
-              onBack={closeFile}
-              accKey={accKey}
-              ct={selectedFile.httpMetadata.contentType}
-              meta={selectedFile.customMetadata.upload}
-              url={getFileFromKeyRoute(selectedFile.key)}
-            />
+            <Box row class={css({position: "relative", width: "100%"})}>
+              <button
+                style={{"--left": 0}}
+                class={viewerControlButton}
+                onClick={openPreviousFile}
+              >
+                <ChevronLeftIcon />
+              </button>
+              <ObjectView
+                onBack={closeFile}
+                accKey={accKey}
+                ct={selectedFile.httpMetadata.contentType}
+                meta={selectedFile.customMetadata.upload}
+                url={getFileFromKeyRoute(selectedFile.key)}
+              />
+              <button
+                style={{"--right": 0}}
+                class={viewerControlButton}
+                onClick={openNextFile}
+              >
+                <ChevronLeftIcon class={css({transform: "rotate(180deg)"})} />
+              </button>
+            </Box>
           </Modal.Body>
         )}
       </Modal>
@@ -181,7 +208,7 @@ export function FileListRenderer({
       <Box>
         <Select
           label="Show"
-          options={[{value: 10}, {value: 15}, {value: 20}, {value: 50}]}
+          options={rendedrCountOptions}
           setValue={(x) => setRenderCount(x as any)}
           value={renderCount}
         />

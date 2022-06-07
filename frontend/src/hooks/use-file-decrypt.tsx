@@ -49,12 +49,14 @@ export function useFileDecrypt({
       const parsed = JSON.parse(meta);
       const res = await decrypt({meta, encryptedBuf: ret}, accKey);
       if (res.error) {
+        setProgress(0);
         return show({content: res.error, type: "error"});
       }
       const decryptedData = new Blob([res], {type: dec(accKey)(parsed.type)});
       if (cache) {
         previewCache.set(key, decryptedData);
       }
+      setProgress(0);
       setBlob(decryptedData);
     })().catch((e) => {});
 

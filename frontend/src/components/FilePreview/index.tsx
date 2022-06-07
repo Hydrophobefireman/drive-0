@@ -186,7 +186,7 @@ function FileRenderer({
           </A>
         )}
       </Box>
-      <Box class={css({height: "100%", width: "100vw"})}>
+      <Box class={css({height: "100%", width: "100%"})}>
         <Renderer src={src} />
         <a href={src} target="_blank">
           File URL
