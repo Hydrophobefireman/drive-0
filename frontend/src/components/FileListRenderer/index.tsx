@@ -12,6 +12,7 @@ import {TextButton} from "@hydrophobefireman/kit/button";
 import {Box} from "@hydrophobefireman/kit/container";
 import {_useHideScrollbar, useClickAway} from "@hydrophobefireman/kit/hooks";
 import {Modal} from "@hydrophobefireman/kit/modal";
+import {Select} from "@hydrophobefireman/kit/select";
 import {useCallback, useRef, useState} from "@hydrophobefireman/ui-lib";
 import {Skeleton} from "@kit/skeleton";
 
@@ -68,6 +69,7 @@ export function FileListRenderer({
     "idle"
   );
   const {show} = useAlerts();
+  const [renderCount, setRenderCount] = useState<10 | 15 | 20 | 50>(10);
   if (!files)
     return (
       <div style={{gap: "10px"}} class={gridRoot}>
@@ -82,6 +84,7 @@ export function FileListRenderer({
   function handleDelete() {
     setListState("delete");
   }
+
   function confDelete() {
     const toDelete = Object.keys(selectedIndices).map(
       (x) => files.objects[x as any as number].key
@@ -175,13 +178,21 @@ export function FileListRenderer({
           Delete
         </TextButton>
       </Box>
+      <Box>
+        <Select
+          label="Show"
+          options={[{value: 10}, {value: 15}, {value: 20}, {value: 50}]}
+          setValue={(x) => setRenderCount(x as any)}
+          value={renderCount}
+        />
+      </Box>
       <div style={listState === "deleting" && {display: "none"}} ref={boxRef}>
         <Paginate
           dualButtons
           buttonClass="kit-button kit-button-secondary"
           buttonWrapperClass={buttonWrapperCls}
           listParentClass={gridRoot}
-          atOnce={10}
+          atOnce={renderCount}
           items={files.objects}
           render={render}
         />

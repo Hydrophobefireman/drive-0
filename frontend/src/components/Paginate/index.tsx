@@ -36,7 +36,7 @@ export function Paginate<T>({
   useEffect(() => setIndex(0), [items]);
   const list = useCurrentItems(items, render, index, endIndex);
   function next() {
-    setIndex(index + atOnce);
+    setIndex(Math.min(itemLength - 1, index + atOnce));
   }
   function prev() {
     setIndex(Math.max(0, index - atOnce));
