@@ -117,12 +117,7 @@ export const openLinkButton = [
 ].join(" ");
 
 export const viewerControlButton = css({
-  position: "absolute",
-  left: "var(--left)",
-  right: "var(--right)",
   background: "white",
-  height: "2rem",
-  width: "2rem",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",

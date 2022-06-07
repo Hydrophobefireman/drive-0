@@ -28,12 +28,7 @@ import {
 import {FileRenderer} from "./file-renderer";
 import {useFileListSelection} from "./use-file-list-selection";
 
-const rendedrCountOptions = [
-  {value: 10},
-  {value: 15},
-  {value: 20},
-  {value: 50},
-];
+const renderCountOptions = [{value: 10}, {value: 15}, {value: 20}, {value: 50}];
 
 export function FileListRenderer({
   files,
@@ -126,6 +121,7 @@ export function FileListRenderer({
         class={css({
           //@ts-ignore
           "--kit-modal-min-width": "95vw",
+          "min-height": "60vw",
         })}
       >
         {selectedFile && (
@@ -140,14 +136,7 @@ export function FileListRenderer({
             >
               {selectedFile.customMetadata.upload.name}
             </Modal.Title>
-            <Box row class={css({position: "relative", width: "100%"})}>
-              <button
-                style={{"--left": 0}}
-                class={viewerControlButton}
-                onClick={openPreviousFile}
-              >
-                <ChevronLeftIcon />
-              </button>
+            <Box class={css({position: "relative", width: "100%"})}>
               <ObjectView
                 onBack={closeFile}
                 accKey={accKey}
@@ -155,13 +144,30 @@ export function FileListRenderer({
                 meta={selectedFile.customMetadata.upload}
                 url={getFileFromKeyRoute(selectedFile.key)}
               />
-              <button
-                style={{"--right": 0}}
-                class={viewerControlButton}
-                onClick={openNextFile}
-              >
-                <ChevronLeftIcon class={css({transform: "rotate(180deg)"})} />
-              </button>
+              <Box row>
+                <TextButton
+                  mode="secondary"
+                  variant="shadow"
+                  prefix={<ChevronLeftIcon />}
+                  class={viewerControlButton}
+                  onClick={openPreviousFile}
+                >
+                  Prev
+                </TextButton>
+                <TextButton
+                  mode="secondary"
+                  variant="shadow"
+                  prefix={
+                    <ChevronLeftIcon
+                      class={css({transform: "rotate(180deg)"})}
+                    />
+                  }
+                  class={viewerControlButton}
+                  onClick={openNextFile}
+                >
+                  Next
+                </TextButton>
+              </Box>
             </Box>
           </Modal.Body>
         )}
@@ -208,7 +214,7 @@ export function FileListRenderer({
       <Box>
         <Select
           label="Show"
-          options={rendedrCountOptions}
+          options={renderCountOptions}
           setValue={(x) => setRenderCount(x as any)}
           value={renderCount}
         />
