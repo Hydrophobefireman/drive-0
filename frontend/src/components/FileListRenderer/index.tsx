@@ -143,31 +143,32 @@ export function FileListRenderer({
                 ct={selectedFile.httpMetadata.contentType}
                 meta={selectedFile.customMetadata.upload}
                 url={getFileFromKeyRoute(selectedFile.key)}
-              />
-              <Box row>
-                <TextButton
-                  mode="secondary"
-                  variant="shadow"
-                  prefix={<ChevronLeftIcon />}
-                  class={viewerControlButton}
-                  onClick={openPreviousFile}
-                >
-                  Prev
-                </TextButton>
-                <TextButton
-                  mode="secondary"
-                  variant="shadow"
-                  prefix={
-                    <ChevronLeftIcon
-                      class={css({transform: "rotate(180deg)"})}
-                    />
-                  }
-                  class={viewerControlButton}
-                  onClick={openNextFile}
-                >
-                  Next
-                </TextButton>
-              </Box>
+              >
+                <Box row>
+                  <TextButton
+                    mode="secondary"
+                    variant="shadow"
+                    prefix={<ChevronLeftIcon />}
+                    class={viewerControlButton}
+                    onClick={openPreviousFile}
+                  >
+                    Prev
+                  </TextButton>
+                  <TextButton
+                    mode="secondary"
+                    variant="shadow"
+                    suffix={
+                      <ChevronLeftIcon
+                        class={css({transform: "rotate(180deg)"})}
+                      />
+                    }
+                    class={viewerControlButton}
+                    onClick={openNextFile}
+                  >
+                    Next
+                  </TextButton>
+                </Box>
+              </ObjectView>
             </Box>
           </Modal.Body>
         )}

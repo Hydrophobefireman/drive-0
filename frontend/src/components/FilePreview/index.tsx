@@ -58,6 +58,7 @@ export interface ObjectViewProps {
   ct: string;
   url: string;
   accKey: string;
+  children?: any;
   onBack?(): void;
 }
 function NotAuthenticated() {
@@ -86,14 +87,27 @@ function NoRenderer({url}: {url: string}) {
     </Box>
   );
 }
-export function ObjectView({meta, ct, url, accKey, onBack}: ObjectViewProps) {
+export function ObjectView({
+  meta,
+  ct,
+  url,
+  accKey,
+  onBack,
+  children,
+}: ObjectViewProps) {
   const Renderer = getRenderer(ct, "base") as typeof BaseImg;
   if (Renderer)
-    return <FileRenderer onBack={onBack} src={url} Renderer={Renderer} />;
+    return (
+      <FileRenderer onBack={onBack} src={url} Renderer={Renderer}>
+        {children}
+      </FileRenderer>
+    );
   if (!meta.enc) return <NoRenderer url={url} />;
   if (!accKey) return <NotAuthenticated />;
   return (
-    <DecryptionViewer accKey={accKey} meta={meta} url={url} onBack={onBack} />
+    <DecryptionViewer accKey={accKey} meta={meta} url={url} onBack={onBack}>
+      {children}
+    </DecryptionViewer>
   );
 }
 
@@ -101,6 +115,7 @@ function DecryptionViewer({
   url,
   accKey,
   meta,
+  children,
   onBack,
 }: Omit<ObjectViewProps, "ct">) {
   const {blob, progress} = useFileDecrypt({url, meta: meta.enc, accKey});
@@ -139,24 +154,40 @@ function DecryptionViewer({
     );
   return (
     <Box class={css({height: "95%", width: "98%", margin: "auto"})}>
-      <DecryptedFileRenderer onBack={onBack} file={blob} />
+      <DecryptedFileRenderer onBack={onBack} file={blob}>
+        {children}
+      </DecryptedFileRenderer>
     </Box>
   );
 }
-function DecryptedFileRenderer({file, onBack}: {file: Blob; onBack(): void}) {
+function DecryptedFileRenderer({
+  file,
+  onBack,
+  children,
+}: {
+  file: Blob;
+  onBack(): void;
+  children?: any;
+}) {
   const src = useObjectUrl(file);
   const Renderer = getRenderer(file.type, "base") as typeof BaseImg;
-  return <FileRenderer src={src} Renderer={Renderer} onBack={onBack} />;
+  return (
+    <FileRenderer src={src} Renderer={Renderer} onBack={onBack}>
+      {children}
+    </FileRenderer>
+  );
 }
 
 function FileRenderer({
   src,
   Renderer,
   onBack,
+  children,
 }: {
   src: string;
-  Renderer;
+  Renderer: any;
   onBack(): void;
+  children?: any;
 }) {
   return (
     <>
@@ -192,6 +223,7 @@ function FileRenderer({
           File URL
         </a>
       </Box>
+      {children}
     </>
   );
 }
