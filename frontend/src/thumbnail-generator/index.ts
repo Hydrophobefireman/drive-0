@@ -1,3 +1,12 @@
+import {encode} from "blurhash";
+export interface ThumbResult {
+  blob: Blob;
+  hash: string;
+  meta: {
+    originalDimensions: [number, number];
+    thumbnailDimensions: [number, number];
+  };
+}
 export class Thumbnail {
   private type: "image" | "video";
   private url: string | null;
@@ -37,15 +46,23 @@ export class Thumbnail {
   }
   private _fromImage() {
     const img = new Image();
-    const prom = new Promise<Blob>((resolve, reject) => {
+    const prom = new Promise<ThumbResult>((resolve, reject) => {
       img.onload = () => {
         const {ctx, canvas} = this._canvas(img);
-        const imgAspect = img.naturalHeight / img.naturalWidth;
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
         canvas.toBlob((b) => {
           if (b == null) return reject(null);
-          resolve(b);
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const hash = encode(imgData.data, canvas.width, canvas.height, 4, 3);
+          resolve({
+            blob: b,
+            hash,
+            meta: {
+              originalDimensions: [img.width, img.height],
+              thumbnailDimensions: [canvas.width, canvas.height],
+            },
+          });
         }, "image/png");
       };
       img.onerror = () => {
@@ -55,6 +72,7 @@ export class Thumbnail {
     img.src = this._createObjectURL();
     return prom;
   }
+
   _getRandomVideoFrame(video: HTMLVideoElement) {
     return new Promise<number>((resolve) => {
       video.addEventListener(
@@ -68,7 +86,7 @@ export class Thumbnail {
   }
   private async _fromVideo() {
     const video = document.createElement("video");
-    const prom = new Promise<Blob>((resolve, reject) => {
+    const prom = new Promise<ThumbResult>((resolve, reject) => {
       video.addEventListener("loadedmetadata", async () => {
         const frame = await this._getRandomVideoFrame(video);
         const seekedPromise = new Promise((resolve) =>
@@ -77,13 +95,21 @@ export class Thumbnail {
         video.currentTime = frame;
         await seekedPromise;
         const {canvas, ctx} = this._canvas(video);
-        const aspect = video.videoHeight / video.videoWidth;
 
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         canvas.toBlob((b) => {
           if (b == null) return reject(null);
-          resolve(b);
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const hash = encode(imgData.data, canvas.width, canvas.height, 4, 3);
+          resolve({
+            blob: b,
+            hash,
+            meta: {
+              originalDimensions: [video.videoWidth, video.videoHeight],
+              thumbnailDimensions: [canvas.width, canvas.height],
+            },
+          });
         }, "image/png");
       });
     });

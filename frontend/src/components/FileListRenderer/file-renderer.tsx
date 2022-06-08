@@ -7,7 +7,11 @@ import {
 } from "@/api-types/files";
 import {dec} from "@/crypto/string_enc";
 import {deleteFile} from "@/handlers/files";
-import {useFileDecrypt} from "@/hooks/use-file-decrypt";
+import {
+  NEEDS_BLUR_HASH,
+  useBlurHashDecode,
+  useFileDecrypt,
+} from "@/hooks/use-file-decrypt";
 import {useAuthState} from "@/util/bridge";
 import {fileUrl} from "@/util/file-url";
 import {imagePreviewDownloadRoute} from "@/util/routes";
@@ -193,12 +197,19 @@ function EncryptedImagePreview({
   url,
 }: Omit<EncrProps, "meta"> & {meta: string}) {
   const {blob} = useFileDecrypt({url, meta, accKey, cache: true});
+  const hash = useBlurHashDecode({accKey, meta});
   const src = useObjectUrl(blob);
 
   return blob && src ? (
     <div style={{backgroundImage: `url("${src}")`}} class={imgPreview} />
+  ) : hash && hash !== NEEDS_BLUR_HASH ? (
+    <div
+      data-is="blur-hash"
+      style={{backgroundImage: `url("${hash}")`}}
+      class={imgPreview}
+    />
   ) : (
-    <loading-spinner class={css({margin: "auto"})} />
+    <loading-spinner />
   );
 }
 function EncryptedFilePreview({accKey, meta, url}: EncrProps) {

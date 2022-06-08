@@ -3,6 +3,7 @@ import {get} from "statedrive";
 import {PendingFileProps} from "@/api-types/PendingFileProps";
 import {PreviewMetadata} from "@/api-types/files";
 import {encrypt} from "@/crypto/encrypt";
+import {enc} from "@/crypto/string_enc";
 import {accountKeyStore} from "@/store/account-key-store";
 import {Thumbnail} from "@/thumbnail-generator";
 import {requests} from "@/util/bridge";
@@ -85,10 +86,16 @@ export class Uploader {
           return resolve(null);
         }
         const thumb = new Thumbnail(this.originalFile, null, 200);
-        const blob = await thumb.generate();
+        const {blob, hash, meta: thumbMeta} = await thumb.generate();
         const buf = await blobToArrayBuffer(blob);
         const accKey = get(accountKeyStore);
-        const {encryptedBuf, meta} = await encrypt(buf, accKey);
+        const {encryptedBuf, meta: _meta} = await encrypt(buf, accKey);
+        const encr = enc(accKey);
+        const meta = JSON.stringify({
+          ...JSON.parse(_meta),
+          hash: encr(hash),
+          thumbMeta: encr(JSON.stringify(thumbMeta)),
+        });
         const {data, error} = await requests.postBinary<{id: string}>(
           uploadImagePreviewRoute,
           encryptedBuf,
