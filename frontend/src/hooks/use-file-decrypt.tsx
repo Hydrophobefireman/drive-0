@@ -43,7 +43,8 @@ export function useBlurHashDecode({accKey, meta}: BlurHashHookProps) {
         const h = thumbMeta.thumbnailDimensions[1];
         const imgData = decode(decr(bhstring), w, h);
         const canvas = document.createElement("canvas");
-        canvas.width = canvas.height = 200;
+        canvas.width = w;
+        canvas.height = h;
         const ctx = canvas.getContext("2d");
         const d = ctx.createImageData(w, h);
         d.data.set(imgData);
