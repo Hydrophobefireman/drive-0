@@ -20,7 +20,7 @@ export function BaseImg({src, class: cls}: {src: string; class?: string}) {
         src !== url && {
           backgroundImage: `url('${url}')`,
           height: `${height}px`,
-          width: `${width}px`,
+          "aspect-ratio": `${width} / ${height}`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
