@@ -12,7 +12,7 @@ import {
   useState,
 } from "@hydrophobefireman/ui-lib";
 
-export const NEEDS_BLUR_HASH = {};
+export const NEEDS_BLUR_HASH = null;
 export const previewCache = new Map<string, Blob>();
 export interface BlurHashHookProps {
   meta?: string;
@@ -28,7 +28,7 @@ export function useCreateBlurHashIfNeeded({
 }
 
 export function useBlurHashDecode({accKey, meta}: BlurHashHookProps) {
-  const [hash, setHash] = useState<Blob | null | object>(null);
+  const [hash, setHash] = useState<string | null>(null);
 
   useEffect(() => {
     setHash(() => {

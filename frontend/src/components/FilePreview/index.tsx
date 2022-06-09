@@ -1,6 +1,7 @@
 import {css} from "catom";
 
 import {UploadCustomMetadata} from "@/api-types/files";
+import {BlurHashContextProvider, useBlurHashContext} from "@/context";
 import {dec} from "@/crypto/string_enc";
 import {ThumbResult} from "@/thumbnail-generator";
 import {Box} from "@hydrophobefireman/kit/container";
@@ -121,28 +122,47 @@ function DecryptionViewer({
   onBack,
 }: Omit<ObjectViewProps, "ct">) {
   const {blob, progress} = useFileDecrypt({url, meta: meta.enc, accKey});
-  const hasBlurHash = useMemo(() => {
-    try {
-      const p = JSON.parse(meta.preview.meta);
-      return !!p.hash;
-    } catch (e) {
-      return false;
-    }
-  }, [meta]);
-  console.log(meta.preview.meta);
-  const {originalDimensions, thumbnailDimensions}: ThumbResult["meta"] =
-    useMemo(() => {
-      if (hasBlurHash) {
-        return JSON.parse(dec(accKey)(JSON.parse(meta.preview.meta).thumbMeta));
-      }
-      return {};
-    }, [meta, accKey]);
-  const {} = useBlurHashDecode(
-    hasBlurHash ? {accKey, meta: meta.preview.meta} : {}
-  );
 
   if (!blob)
     return (
+      <BlurHashContextProvider accKey={accKey} meta={meta}>
+        <DownloadProgress progress={progress} onBack={onBack} />
+      </BlurHashContextProvider>
+    );
+  return (
+    <Box class={css({height: "95%", width: "98%", margin: "auto"})}>
+      <DecryptedFileRenderer onBack={onBack} file={blob}>
+        {children}
+      </DecryptedFileRenderer>
+    </Box>
+  );
+}
+
+export function DownloadProgress({
+  progress,
+  onBack,
+}: {
+  progress: number;
+  onBack(): void;
+}) {
+  const {url, height, width} = useBlurHashContext();
+  return (
+    <Box
+      style={{"--h": `${height}px`, "--w": `${width}px`}}
+      class={css({height: "95%", width: "98%", margin: "auto"})}
+    >
+      {url && (
+        <FileRenderer
+          src={url}
+          onBack={onBack}
+          Renderer={() => (
+            <BaseImg
+              src={url}
+              class={css({height: "var(--h)", width: "var(--w)"})}
+            />
+          )}
+        />
+      )}
       <DelayedRender time={500}>
         <div
           class={css({
@@ -173,15 +193,10 @@ function DecryptionViewer({
           />
         </div>
       </DelayedRender>
-    );
-  return (
-    <Box class={css({height: "95%", width: "98%", margin: "auto"})}>
-      <DecryptedFileRenderer onBack={onBack} file={blob}>
-        {children}
-      </DecryptedFileRenderer>
     </Box>
   );
 }
+
 function DecryptedFileRenderer({
   file,
   onBack,
