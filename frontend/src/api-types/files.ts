@@ -1,6 +1,8 @@
 export interface PreviewMetadata {
   id: string;
   meta: string;
+  // hash?: string;
+  // thumbData: string;
 }
 export interface UploadCustomMetadata {
   enc: string;

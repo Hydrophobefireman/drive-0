@@ -15,8 +15,8 @@ import {
 export const NEEDS_BLUR_HASH = {};
 export const previewCache = new Map<string, Blob>();
 export interface BlurHashHookProps {
-  meta: string;
-  accKey: string;
+  meta?: string;
+  accKey?: string;
 }
 export function useCreateBlurHashIfNeeded({
   accKey,
@@ -26,21 +26,29 @@ export function useCreateBlurHashIfNeeded({
   const parsed = useMemo(() => JSON.parse(meta), [meta]);
   const hasHash = !!parsed.hash;
 }
+
 export function useBlurHashDecode({accKey, meta}: BlurHashHookProps) {
   const [hash, setHash] = useState<Blob | null | object>(null);
+
   useEffect(() => {
     setHash(() => {
       if (!meta) return null;
-      const bhstring = JSON.parse(meta).hash;
+      const parsedMeta = JSON.parse(meta);
+      const bhstring = parsedMeta.hash;
       if (!bhstring) return NEEDS_BLUR_HASH;
       try {
-        const imgData = decode(dec(accKey)(bhstring), 200, 200);
+        const decr = dec(accKey);
+        const thumbMeta = JSON.parse(decr(parsedMeta.thumbMeta));
+        const w = thumbMeta.thumbnailDimensions[0];
+        const h = thumbMeta.thumbnailDimensions[1];
+        const imgData = decode(decr(bhstring), w, h);
         const canvas = document.createElement("canvas");
         canvas.width = canvas.height = 200;
         const ctx = canvas.getContext("2d");
-        const d = ctx.createImageData(200, 200);
+        const d = ctx.createImageData(w, h);
         d.data.set(imgData);
         ctx.putImageData(d, 0, 0);
+
         return canvas.toDataURL("image/png");
       } catch (e) {
         console.warn(e);

@@ -1,13 +1,15 @@
 import {css} from "catom";
 
 import {UploadCustomMetadata} from "@/api-types/files";
+import {dec} from "@/crypto/string_enc";
+import {ThumbResult} from "@/thumbnail-generator";
 import {Box} from "@hydrophobefireman/kit/container";
 import {useMount} from "@hydrophobefireman/kit/hooks";
 import {ArrowLeftIcon} from "@hydrophobefireman/kit/icons";
 import {Text} from "@hydrophobefireman/kit/text";
-import {A, redirect} from "@hydrophobefireman/ui-lib";
+import {A, redirect, useMemo} from "@hydrophobefireman/ui-lib";
 
-import {useFileDecrypt} from "../../hooks/use-file-decrypt";
+import {useBlurHashDecode, useFileDecrypt} from "../../hooks/use-file-decrypt";
 import {DelayedRender} from "../DelayedRender";
 import {AudioRenderer, BaseAudio} from "./Renderers/audio-renderer";
 import {BaseImg, ImgRenderer} from "./Renderers/img-renderer";
@@ -119,6 +121,26 @@ function DecryptionViewer({
   onBack,
 }: Omit<ObjectViewProps, "ct">) {
   const {blob, progress} = useFileDecrypt({url, meta: meta.enc, accKey});
+  const hasBlurHash = useMemo(() => {
+    try {
+      const p = JSON.parse(meta.preview.meta);
+      return !!p.hash;
+    } catch (e) {
+      return false;
+    }
+  }, [meta]);
+  console.log(meta.preview.meta);
+  const {originalDimensions, thumbnailDimensions}: ThumbResult["meta"] =
+    useMemo(() => {
+      if (hasBlurHash) {
+        return JSON.parse(dec(accKey)(JSON.parse(meta.preview.meta).thumbMeta));
+      }
+      return {};
+    }, [meta, accKey]);
+  const {} = useBlurHashDecode(
+    hasBlurHash ? {accKey, meta: meta.preview.meta} : {}
+  );
+
   if (!blob)
     return (
       <DelayedRender time={500}>
