@@ -1,5 +1,7 @@
 import {css} from "catom";
 
+import {useBlurHashContext} from "@/context";
+
 import {Renderer} from "./types";
 import {useObjectUrl} from "./use-file";
 
@@ -9,8 +11,18 @@ export function ImgRenderer({file}: Renderer) {
 }
 
 export function BaseImg({src, class: cls}: {src: string; class?: string}) {
+  const {url, height, width} = useBlurHashContext();
   return (
     <img
+      style={
+        url &&
+        src &&
+        src !== url && {
+          backgroundImage: `url('${url}')`,
+          height,
+          width,
+        }
+      }
       src={src || null}
       class={[
         css({

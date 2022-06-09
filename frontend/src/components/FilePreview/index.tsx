@@ -2,15 +2,13 @@ import {css} from "catom";
 
 import {UploadCustomMetadata} from "@/api-types/files";
 import {BlurHashContextProvider, useBlurHashContext} from "@/context";
-import {dec} from "@/crypto/string_enc";
-import {ThumbResult} from "@/thumbnail-generator";
 import {Box} from "@hydrophobefireman/kit/container";
 import {useMount} from "@hydrophobefireman/kit/hooks";
 import {ArrowLeftIcon} from "@hydrophobefireman/kit/icons";
 import {Text} from "@hydrophobefireman/kit/text";
-import {A, redirect, useMemo} from "@hydrophobefireman/ui-lib";
+import {A, redirect} from "@hydrophobefireman/ui-lib";
 
-import {useBlurHashDecode, useFileDecrypt} from "../../hooks/use-file-decrypt";
+import {useFileDecrypt} from "../../hooks/use-file-decrypt";
 import {DelayedRender} from "../DelayedRender";
 import {AudioRenderer, BaseAudio} from "./Renderers/audio-renderer";
 import {BaseImg, ImgRenderer} from "./Renderers/img-renderer";
@@ -101,16 +99,20 @@ export function ObjectView({
   const Renderer = getRenderer(ct, "base") as typeof BaseImg;
   if (Renderer)
     return (
-      <FileRenderer onBack={onBack} src={url} Renderer={Renderer}>
-        {children}
-      </FileRenderer>
+      <BlurHashContextProvider accKey={accKey} meta={meta}>
+        <FileRenderer onBack={onBack} src={url} Renderer={Renderer}>
+          {children}
+        </FileRenderer>
+      </BlurHashContextProvider>
     );
   if (!meta.enc) return <NoRenderer url={url} />;
   if (!accKey) return <NotAuthenticated />;
   return (
-    <DecryptionViewer accKey={accKey} meta={meta} url={url} onBack={onBack}>
-      {children}
-    </DecryptionViewer>
+    <BlurHashContextProvider accKey={accKey} meta={meta}>
+      <DecryptionViewer accKey={accKey} meta={meta} url={url} onBack={onBack}>
+        {children}
+      </DecryptionViewer>
+    </BlurHashContextProvider>
   );
 }
 
@@ -123,12 +125,7 @@ function DecryptionViewer({
 }: Omit<ObjectViewProps, "ct">) {
   const {blob, progress} = useFileDecrypt({url, meta: meta.enc, accKey});
 
-  if (!blob)
-    return (
-      <BlurHashContextProvider accKey={accKey} meta={meta}>
-        <DownloadProgress progress={progress} onBack={onBack} />
-      </BlurHashContextProvider>
-    );
+  if (!blob) return <DownloadProgress progress={progress} onBack={onBack} />;
   return (
     <Box class={css({height: "95%", width: "98%", margin: "auto"})}>
       <DecryptedFileRenderer onBack={onBack} file={blob}>
@@ -148,7 +145,7 @@ export function DownloadProgress({
   const {url, height, width} = useBlurHashContext();
   return (
     <Box
-      style={{"--h": `${height}px`, "--w": `${width}px`}}
+      style={url && {"--h": `${height}px`, "--w": `${width}px`}}
       class={css({height: "95%", width: "98%", margin: "auto"})}
     >
       {url && (
