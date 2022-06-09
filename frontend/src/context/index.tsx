@@ -1,5 +1,4 @@
 import {UploadCustomMetadata} from "@/api-types/files";
-import {useObjectUrl} from "@/components/FilePreview/Renderers/use-file";
 import {dec} from "@/crypto/string_enc";
 import {useBlurHashDecode} from "@/hooks/use-file-decrypt";
 import {ThumbResult} from "@/thumbnail-generator";
@@ -29,13 +28,13 @@ export function BlurHashContextProvider({
     }
   }, [meta]);
   const {originalDimensions = [1, 1]}: ThumbResult["meta"] = useMemo(() => {
-    if (hasBlurHash) {
+    if (hasBlurHash && accKey) {
       return JSON.parse(dec(accKey)(JSON.parse(meta.preview.meta).thumbMeta));
     }
     return {};
   }, [meta, accKey]);
   const bh = useBlurHashDecode(
-    hasBlurHash ? {accKey, meta: meta.preview.meta} : {}
+    accKey && hasBlurHash ? {accKey, meta: meta.preview.meta} : {}
   );
 
   return (
@@ -55,5 +54,5 @@ export function BlurHashContextProvider({
 }
 
 export function useBlurHashContext() {
-  return useContext(BlurHashContext);
+  return useContext(BlurHashContext) || {height: null, width: null, url: null};
 }
