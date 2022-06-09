@@ -121,7 +121,7 @@ export function FileListRenderer({
         class={css({
           //@ts-ignore
           "--kit-modal-min-width": "95vw",
-          "min-height": "60vw",
+          minHeight: "60vh",
         })}
       >
         {selectedFile && (
