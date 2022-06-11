@@ -16,11 +16,15 @@ export function BaseImg({src, class: cls}: {src: string; class?: string}) {
     <img
       style={{
         backgroundImage: url && src && src !== url ? `url('${url}')` : null,
-        height: `${height}px`,
-        "aspect-ratio": `${width} / ${height}`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        ...(url
+          ? {
+              height: `${height}px`,
+              "aspect-ratio": `${width} / ${height}`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }
+          : {}),
       }}
       src={src || null}
       class={[

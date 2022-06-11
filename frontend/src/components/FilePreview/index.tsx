@@ -142,7 +142,7 @@ export function DownloadProgress({
   progress: number;
   onBack(): void;
 }) {
-  const {url, height, width} = useBlurHashContext();
+  const {url} = useBlurHashContext();
   return (
     <Box class={css({height: "95%", width: "98%", margin: "auto"})}>
       {url && (
@@ -150,7 +150,9 @@ export function DownloadProgress({
           src={url}
           onBack={onBack}
           noURL
-          Renderer={() => <BaseImg src={url} />}
+          Renderer={() => (
+            <BaseImg class={css({marginBottom: ".5rem"})} src={url} />
+          )}
         />
       )}
       <DelayedRender time={500}>
