@@ -144,20 +144,13 @@ export function DownloadProgress({
 }) {
   const {url, height, width} = useBlurHashContext();
   return (
-    <Box
-      style={url && {"--h": `${height}px`, "--w": `${width}px`}}
-      class={css({height: "95%", width: "98%", margin: "auto"})}
-    >
+    <Box class={css({height: "95%", width: "98%", margin: "auto"})}>
       {url && (
         <FileRenderer
           src={url}
           onBack={onBack}
-          Renderer={() => (
-            <BaseImg
-              src={url}
-              class={css({height: "var(--h)", width: "var(--w)"})}
-            />
-          )}
+          noURL
+          Renderer={() => <BaseImg src={url} />}
         />
       )}
       <DelayedRender time={500}>
@@ -217,11 +210,13 @@ function FileRenderer({
   Renderer,
   onBack,
   children,
+  noURL,
 }: {
   src: string;
   Renderer: any;
   onBack(): void;
   children?: any;
+  noURL?: boolean;
 }) {
   return (
     <>
@@ -253,9 +248,11 @@ function FileRenderer({
       </Box>
       <Box class={css({height: "100%", width: "100%"})}>
         <Renderer src={src} />
-        <a href={src} target="_blank">
-          File URL
-        </a>
+        {!noURL && (
+          <a href={src} target="_blank">
+            File URL
+          </a>
+        )}
       </Box>
       {children}
     </>
