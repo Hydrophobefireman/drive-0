@@ -107,7 +107,9 @@ export function useFileDecrypt({
         setProgress(0);
         return show({content: res.error, type: "error"});
       }
-      const decryptedData = new Blob([res], {type: dec(accKey)(parsed.type)});
+      const decryptedData = new Blob([res], {
+        type: dec(accKey)(parsed.type) || "image/png",
+      });
       if (cache) {
         previewCache.set(key, decryptedData);
       }
