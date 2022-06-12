@@ -58,6 +58,7 @@ export function useBatchDownload() {
         el.click();
       }
     }
+    show({content: "Done downloading"});
   },
   []);
 }
