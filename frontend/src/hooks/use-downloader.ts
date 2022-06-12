@@ -17,9 +17,10 @@ export function useBatchDownload() {
   return useCallback(async function download(
     toDownload: FileListResponse["objects"]
   ) {
-    for (const file of toDownload) {
+    for (let i = 0; i < toDownload.length; i++) {
+      const file = toDownload[i];
       const name = file.customMetadata.upload.name;
-      show({content: `Downloading ${name}`});
+      show({content: `(${i + 1}/${toDownload.length}) Downloading ${name}`});
       let url = getFileFromKeyRoute(file.key, true);
       if (file.customMetadata.upload.enc) {
         const {result} = downloadBinary(url);
