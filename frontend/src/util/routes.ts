@@ -21,7 +21,8 @@ export const getFileBinaryRoute = (
   key: string,
   filename: string
 ) => getURL(`/o/${user}/${key}/${filename}`);
-export const getFileFromKeyRoute = (k: string) => getURL(`/o/${k}`);
+export const getFileFromKeyRoute = (k: string, download?: boolean) =>
+  getURL(`/o/${k}${download ? "?download=true" : ""}`);
 export const uploadFileRoute = getFileBinaryRoute;
 
 export const deleteFileRoute = (user: string) =>

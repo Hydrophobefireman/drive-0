@@ -3,6 +3,7 @@ import {useSharedStateValue} from "statedrive";
 
 import {FileListResponse} from "@/api-types/files";
 import {deleteFile} from "@/handlers/files";
+import {useBatchDownload} from "@/hooks/use-downloader";
 import {accountKeyStore} from "@/store/account-key-store";
 import {useAuthState} from "@/util/bridge";
 import {getEventPath} from "@/util/get-path";
@@ -43,15 +44,20 @@ export function FileListRenderer({
     clearSelection,
     delegateClick,
     selectedIndices,
-    file: {selectedFile, selectedFileIndex},
+    file: {selectedFile},
     closeFile,
     openNextFile,
     openPreviousFile,
   } = useFileListSelection(files);
-
+  const batchDownload = useBatchDownload();
+  function downloadSingleFile(e: JSX.TargetedMouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
+    return batchDownload([files.objects[+e.currentTarget.dataset.index]]);
+  }
   const render = useCallback(
     (obj: FileListResponse["objects"][0], i: number) => (
       <FileRenderer
+        download={downloadSingleFile}
         accKey={accKey}
         fetchResource={fetchResource}
         index={i}
@@ -75,6 +81,7 @@ export function FileListRenderer({
     "idle"
   );
   const {show} = useAlerts();
+
   const [renderCount, setRenderCount] = useState<10 | 15 | 20 | 50>(10);
   if (!files)
     return (
@@ -109,6 +116,12 @@ export function FileListRenderer({
 
       fetchResource();
     });
+  }
+  function download() {
+    const toDownload = Object.keys(selectedIndices).map(
+      (x) => selectedIndices[x] && files.objects[x as any as number]
+    );
+    batchDownload(toDownload);
   }
   const selectedIndiceValues = Object.values(selectedIndices);
   const hasSelections = selectedIndiceValues.some(Boolean);
@@ -196,6 +209,7 @@ export function FileListRenderer({
         </div>
       </Modal>
       <Box
+        row
         ref={menuRef}
         horizontal="right"
         style={!hasSelections && {pointerEvents: "none"}}
@@ -205,11 +219,21 @@ export function FileListRenderer({
           tabIndex={hasSelections ? 0 : -1}
           onClick={handleDelete}
           style={!hasSelections && {opacity: 0}}
-          class={css({transition: "var(--kit-transition)"})}
+          class={css({transition: "var(--kit-transition)", margin: ".5rem"})}
           variant="shadow"
           mode="error"
         >
           Delete
+        </TextButton>
+        <TextButton
+          tabIndex={hasSelections ? 0 : -1}
+          onClick={download}
+          style={!hasSelections && {opacity: 0}}
+          class={css({transition: "var(--kit-transition)", margin: ".5rem"})}
+          variant="shadow"
+          mode="success"
+        >
+          Download
         </TextButton>
       </Box>
       <Box>

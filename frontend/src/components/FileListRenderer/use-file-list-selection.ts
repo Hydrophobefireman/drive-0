@@ -1,6 +1,6 @@
 import {FileListResponse} from "@/api-types/files";
 import {rangeObj} from "@/util/range";
-import {loadURL, useEffect, useRef, useState} from "@hydrophobefireman/ui-lib";
+import {useEffect, useRef, useState} from "@hydrophobefireman/ui-lib";
 
 export function useFileListSelection(files: FileListResponse) {
   const [selectedIndices, setSelectedIndices] = useState<

@@ -25,6 +25,7 @@ import {
 } from "@hydrophobefireman/kit/hooks";
 import {
   DotsVerticalIcon,
+  DownloadIcon,
   ExternalLinkIcon,
   LockClosedIcon,
   TrashIcon,
@@ -52,6 +53,7 @@ export interface FileRendererProps {
   delegate(e: MouseEvent): boolean;
   isSelected?: boolean;
   accKey: string;
+  download(n: JSX.TargetedMouseEvent<HTMLButtonElement>): void;
 }
 
 export function FileRenderer({
@@ -61,6 +63,7 @@ export function FileRenderer({
   delegate,
   isSelected,
   accKey,
+  download,
 }: FileRendererProps) {
   const {show} = useAlerts();
   const [user] = useAuthState();
@@ -138,6 +141,17 @@ export function FileRenderer({
           <ExternalLinkIcon />
           <span>Open in new tab</span>
         </a>
+        <Button
+          tabIndex={active ? 0 : -1}
+          onClick={download}
+          variant="custom"
+          data-index={index}
+          class={actionButton}
+          label="Download file"
+          prefix={<DownloadIcon />}
+        >
+          Download
+        </Button>
       </div>
       {obj.customMetadata.upload.preview ? (
         <OptimizedPreview

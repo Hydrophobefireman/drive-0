@@ -59,6 +59,7 @@ export const menuActive = css({
   transition: "var(--kit-transition)",
   transformOrigin: "top right",
   borderRadius: "var(--kit-radius)",
+  zIndex: "10",
 });
 
 export const imgPreview = css({

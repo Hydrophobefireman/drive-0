@@ -2,7 +2,6 @@ import {FileListResponse} from "@/api-types/files";
 import {requests} from "@/util/bridge";
 import {
   deleteFileRoute,
-  getFileBinaryRoute,
   getFileFromKeyRoute,
   listFilesRoute,
 } from "@/util/routes";
