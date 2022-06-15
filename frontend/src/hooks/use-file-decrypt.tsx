@@ -5,26 +5,13 @@ import {dec} from "@/crypto/string_enc";
 import {requests} from "@/util/bridge";
 import {_util} from "@hydrophobefireman/kit";
 import {useAlerts} from "@hydrophobefireman/kit/alerts";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "@hydrophobefireman/ui-lib";
+import {useCallback, useEffect, useState} from "@hydrophobefireman/ui-lib";
 
 export const NEEDS_BLUR_HASH = null;
 export const previewCache = new Map<string, Blob>();
 export interface BlurHashHookProps {
   meta?: string;
   accKey?: string;
-}
-export function useCreateBlurHashIfNeeded({
-  accKey,
-  meta,
-  url,
-}: BlurHashHookProps & {url: string}) {
-  const parsed = useMemo(() => JSON.parse(meta), [meta]);
-  const hasHash = !!parsed.hash;
 }
 
 export function useBlurHashDecode({accKey, meta}: BlurHashHookProps) {
