@@ -125,7 +125,12 @@ function DecryptionViewer({
 }: Omit<ObjectViewProps, "ct">) {
   const {blob, progress} = useFileDecrypt({url, meta: meta.enc, accKey});
 
-  if (!blob) return <DownloadProgress progress={progress} onBack={onBack} />;
+  if (!blob)
+    return (
+      <DownloadProgress progress={progress} onBack={onBack}>
+        {children}
+      </DownloadProgress>
+    );
   return (
     <Box class={css({height: "95%", width: "98%", margin: "auto"})}>
       <DecryptedFileRenderer onBack={onBack} file={blob}>
@@ -137,10 +142,12 @@ function DecryptionViewer({
 
 export function DownloadProgress({
   progress,
+  children,
   onBack,
 }: {
   progress: number;
   onBack(): void;
+  children?: any;
 }) {
   const {url} = useBlurHashContext();
   return (
@@ -153,7 +160,9 @@ export function DownloadProgress({
           Renderer={() => (
             <BaseImg class={css({marginBottom: ".5rem"})} src={url} />
           )}
-        />
+        >
+          {children}
+        </FileRenderer>
       )}
       <DelayedRender time={500}>
         <div

@@ -134,11 +134,14 @@ export function FileListRenderer({
         class={css({
           //@ts-ignore
           "--kit-modal-min-width": "95vw",
-          minHeight: "60vh",
+          minHeight: "90vh",
         })}
       >
         {selectedFile && (
-          <Modal.Body>
+          <Box
+            horizontal="center"
+            class={css({padding: "2rem", height: "100%"})}
+          >
             <Modal.Title
               class={css({
                 margin: "0px",
@@ -149,7 +152,7 @@ export function FileListRenderer({
             >
               {selectedFile.customMetadata.upload.name}
             </Modal.Title>
-            <Box class={css({position: "relative", width: "100%"})}>
+            <Box flex={1} class={css({position: "relative", width: "100%"})}>
               <ObjectView
                 onBack={closeFile}
                 accKey={accKey}
@@ -183,7 +186,7 @@ export function FileListRenderer({
                 </Box>
               </ObjectView>
             </Box>
-          </Modal.Body>
+          </Box>
         )}
       </Modal>
       <Modal active={hasSelections && listState === "delete"}>
