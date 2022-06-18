@@ -58,12 +58,21 @@ export class GetHandler extends BaseHandler<
     if (object === null) {
       return notFoundObject(objectName);
     }
+    const rangeResponse = range
+      ? `bytes ${range.offset}-${range.offset + (range.length || 0) - 1}/${
+          object.size
+        }`
+      : "";
 
     const headers = new Headers();
     const meta = JSON.parse(object.customMetadata.upload);
     object.writeHttpMetadata(headers);
     headers.set("etag", object.httpEtag);
     headers.set("x-file-meta", meta.name);
+    if (range) {
+      // console.log(rangeResponse);
+      headers.set("content-range", rangeResponse);
+    }
     headers.set("cache-control", "max-age=31536000, immutable");
     if (download) {
       headers.set("content-disposition", `attachment;filename="${meta.name}"`);
