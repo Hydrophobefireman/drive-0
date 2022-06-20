@@ -11,9 +11,7 @@ export class HeadHandler extends BaseHandler<"user" | "key" | "filename"> {
     const {filename, key, user} = this.c.req.param();
     const objectName = createObjectName(user, key, filename);
 
-    const object = await B_GALLERY.head(objectName, {
-      onlyIf: this.c.req.headers,
-    });
+    const object = await B_GALLERY.head(objectName);
 
     if (object === null) {
       return notFoundObject(objectName);

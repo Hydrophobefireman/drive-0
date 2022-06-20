@@ -11,6 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "hono": "^1.3.4"
+    "hono": "^1.3.4",
+    "range-parser": "^1.2.1"
+  },
+  "devDependencies": {
+    "@types/range-parser": "^1.2.4"
   }
 }

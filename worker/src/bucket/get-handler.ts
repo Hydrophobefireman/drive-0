@@ -1,8 +1,19 @@
+import parseRange from "range-parser";
+
 import {decodeAuth} from "../auth";
+import {json} from "../util/json";
 import {notFoundObject} from "../util/not-found";
-import {parseRange} from "../util/parse-range";
 import {BaseHandler} from "./base-handler";
 import {createObjectName, getPreviewKey} from "./util";
+
+function hasSuffix(range: R2Range): range is {suffix: number} {
+  return (<{suffix: number}>range).suffix !== undefined;
+}
+function getRangeHeader(range: R2Range, fileSize: number): string {
+  return `bytes ${hasSuffix(range) ? fileSize - range.suffix : range.offset}-${
+    hasSuffix(range) ? fileSize - 1 : range.offset! + range.length! - 1
+  }/${fileSize}`;
+}
 
 export class GetHandler extends BaseHandler<
   "user" | "key" | "filename" | "id"
@@ -36,18 +47,35 @@ export class GetHandler extends BaseHandler<
       env: {B_GALLERY},
     } = this.c;
 
-    let range = parseRange(req.headers.get("range"));
+    let rangeHeader = req.headers.get("range");
     const download = req.query()["download"];
     const {filename, key, user} = this.c.req.param();
     const objectName = createObjectName(user, key, filename);
-    if (range && "rest" in range) {
-      const ret = await B_GALLERY.list({prefix: objectName});
-      const obj = ret.objects.find(({key}) => key === objectName);
+    let range: R2Range | undefined = undefined;
+    if (rangeHeader) {
+      const obj = await B_GALLERY.head(objectName);
       if (!obj) {
         const res = notFoundObject(objectName);
         return res;
       }
-      range = {offset: range.offset, length: obj.size};
+      const parsedRanges = parseRange(obj.size, rangeHeader);
+      if (
+        parsedRanges === -1 ||
+        parsedRanges === -2 ||
+        parsedRanges.length !== 1 ||
+        parsedRanges.type !== "bytes"
+      ) {
+        return json({error: "Range invalid"}, 416);
+      }
+      let firstRange = parsedRanges[0];
+
+      range =
+        obj.size === firstRange.end + 1
+          ? {suffix: obj.size - firstRange.start}
+          : {
+              offset: firstRange.start,
+              length: firstRange.end - firstRange.start + 1,
+            };
     }
 
     const object = (await B_GALLERY.get(objectName, {
@@ -58,11 +86,7 @@ export class GetHandler extends BaseHandler<
     if (object === null) {
       return notFoundObject(objectName);
     }
-    const rangeResponse = range
-      ? `bytes ${range.offset}-${range.offset + (range.length || 0) - 1}/${
-          object.size
-        }`
-      : "";
+    const rangeResponse = range ? getRangeHeader(range, object.size) : "";
 
     const headers = new Headers();
     const meta = JSON.parse(object.customMetadata.upload);

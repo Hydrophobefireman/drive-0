@@ -62,7 +62,7 @@ export async function register(username: string, c: Context) {
   const user: UserType = {
     account_key_hash: await hash(accountKey),
     created_at: +new Date(),
-    is_approved: false,
+    is_approved: true,
     user: username,
     _integrity: crypto.randomUUID(),
   };
