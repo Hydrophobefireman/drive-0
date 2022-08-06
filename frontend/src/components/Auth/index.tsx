@@ -1,19 +1,24 @@
 import {css} from "catom";
+import {set} from "statedrive";
 
 import {register} from "@/handlers/auth";
+import {
+  ACCOUNT_SESSION_STORAGE_KEY,
+  accountKeyStore,
+} from "@/store/account-key-store";
 import {client, useIsLoggedIn} from "@/util/bridge";
+import {set as idbSet} from "@hydrophobefireman/flask-jwt-jskit";
 import {Box} from "@hydrophobefireman/kit/container";
-import {Input} from "@hydrophobefireman/kit/input";
+import {ClipboardCopyIcon} from "@hydrophobefireman/kit/icons";
+import {Checkbox, Input, useCheckbox} from "@hydrophobefireman/kit/input";
+import {Text} from "@hydrophobefireman/kit/text";
 import {redirect, useEffect, useRef, useState} from "@hydrophobefireman/ui-lib";
 import {useAlerts} from "@kit/alerts";
 import {Button} from "@kit/button";
-import {Modal} from "@kit/modal";
-import {Form} from "../Form";
-import {Text} from "@hydrophobefireman/kit/text";
-import {ClipboardCopyIcon} from "@hydrophobefireman/kit/icons";
 import {Collapse} from "@kit/collapse";
-import {set} from "statedrive";
-import {accountKeyStore} from "@/store/account-key-store";
+import {Modal} from "@kit/modal";
+
+import {Form} from "../Form";
 
 const authButton = css({
   padding: ".5rem",
@@ -64,6 +69,8 @@ export function Auth() {
       login(accKey);
     }
   }
+  const {checked, setChecked} = useCheckbox(false);
+
   async function login(key: string) {
     setFormState("pending");
     const {error, data} = await client.login(user, key).result;
@@ -78,6 +85,9 @@ export function Auth() {
           login(key);
         },
       });
+    }
+    if (checked) {
+      idbSet(ACCOUNT_SESSION_STORAGE_KEY, key);
     }
     set(accountKeyStore, key);
     return redirect("/app");
@@ -190,7 +200,15 @@ export function Auth() {
               label="Account Key"
               type="password"
             />
+            <Checkbox
+              checked={checked}
+              onCheck={setChecked}
+              label="Save my key"
+            >
+              Save my key
+            </Checkbox>
           </Collapse>
+
           <Button
             class={css({
               width: "100px",

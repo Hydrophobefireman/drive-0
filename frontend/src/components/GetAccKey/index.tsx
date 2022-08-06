@@ -1,6 +1,7 @@
 import {css} from "catom";
 
 import {ACCOUNT_SESSION_STORAGE_KEY} from "@/store/account-key-store";
+import {client} from "@/util/bridge";
 import {set} from "@hydrophobefireman/flask-jwt-jskit";
 import {TextButton} from "@hydrophobefireman/kit/button";
 import {Checkbox, Input, useCheckbox} from "@hydrophobefireman/kit/input";
@@ -19,7 +20,12 @@ export function GetAccKey({setKey}: {setKey(k: string): void}) {
       <Modal.Body>
         <Modal.Title>Enter Account Key</Modal.Title>
         <Text>
-          Your account key is needed to encrypt and decrypt your files
+          Your account key is needed to encrypt and decrypt your files for{" "}
+          {(
+            <span class={css({textDecoration: "underline"})}>
+              {client.getState()?.user}
+            </span>
+          ) ?? "your account"}
         </Text>
         <Form
           onSubmit={() => {
