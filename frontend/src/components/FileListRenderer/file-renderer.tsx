@@ -79,8 +79,18 @@ export function FileRenderer({
       return;
     }
     e.stopPropagation();
+    dispatchEvent(new CustomEvent("toggle:menu", {detail: menuRef}));
     setActive((x) => !x);
   }
+  useEffect(() => {
+    const listener = (e: CustomEvent) => {
+      if (e.detail !== menuRef) {
+        closeMenu();
+      }
+    };
+    addEventListener("toggle:menu", listener);
+    return () => removeEventListener("toggle:menu", listener);
+  });
   useClickAway(closeMenu, active && menuRef.current);
 
   function handleDelete(e: MouseEvent) {
@@ -105,6 +115,7 @@ export function FileRenderer({
   useMount(() => () => closeMenu);
   if (!user) return;
   const checkboxClick = (e: MouseEvent) => {
+    dispatchEvent(new CustomEvent("toggle:menu", {detail: menuRef}));
     e.stopPropagation();
     delegate(e);
     closeMenu();

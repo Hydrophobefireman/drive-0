@@ -23,7 +23,6 @@ export function useFileListSelection(files: FileListResponse) {
     const i = +(e.currentTarget as any).dataset.index;
     const isCheckbox = (e.currentTarget as any).dataset.is === "checkbox";
     prevClicked.current = i;
-    console.log(isCheckbox);
     if (!isCheckbox) {
       if (!(e.shiftKey || e.ctrlKey)) {
         setSelectedIndices({});
