@@ -21,11 +21,15 @@ export function useFileListSelection(files: FileListResponse) {
   function delegateClick(e: MouseEvent) {
     const {current} = prevClicked;
     const i = +(e.currentTarget as any).dataset.index;
+    const isCheckbox = (e.currentTarget as any).dataset.is === "checkbox";
     prevClicked.current = i;
-    if (!(e.shiftKey || e.ctrlKey)) {
-      setSelectedIndices({});
-      setFile({selectedFile: files.objects[i], selectedFileIndex: i});
-      return;
+    console.log(isCheckbox);
+    if (!isCheckbox) {
+      if (!(e.shiftKey || e.ctrlKey)) {
+        setSelectedIndices({});
+        setFile({selectedFile: files.objects[i], selectedFileIndex: i});
+        return;
+      }
     }
     if (current != null /* can be 0 */) {
       if (e.shiftKey) {
@@ -35,7 +39,7 @@ export function useFileListSelection(files: FileListResponse) {
         }));
         return true;
       }
-      if (e.ctrlKey) {
+      if (e.ctrlKey || isCheckbox) {
         setSelectedIndices((curr) => {
           return {...curr, [i]: !curr[i]};
         });

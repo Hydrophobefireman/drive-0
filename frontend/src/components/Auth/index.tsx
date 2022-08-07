@@ -200,6 +200,8 @@ export function Auth() {
               label="Account Key"
               type="password"
             />
+          </Collapse>
+          {mode === "login" && (
             <Checkbox
               checked={checked}
               onCheck={setChecked}
@@ -207,8 +209,7 @@ export function Auth() {
             >
               Save my key
             </Checkbox>
-          </Collapse>
-
+          )}
           <Button
             class={css({
               width: "100px",

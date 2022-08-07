@@ -9,18 +9,21 @@ export const gridRoot = css({
 });
 export const menuButton = css({
   transition: "var(--kit-transition)",
-  background: "#00000078",
-  padding: ".25rem",
-  borderRadius: "20px",
+  background: "var(--button-bg,#00000078)",
+  padding: "var(--b-padding,.25rem)",
+  borderRadius: "var(--radius,20px)",
   display: "flex",
   pseudo: {
-    ":focus-visible": {
+    "[disabled]": {
+      opacity: "0",
+    },
+    ":not([disabled]):focus-visible": {
       opacity: 1,
     },
   },
   media: {
     "(min-width:600px)": {
-      opacity: "0",
+      opacity: "var(--opacity-desktop,0)",
     },
   },
 });
@@ -45,7 +48,7 @@ export const gridEl = css({
     ":hover": {
       boxShadow: "var(--shadow-elevation-low)",
     },
-    ":hover button": {opacity: "1"},
+    ":hover button:not([disabled])": {opacity: "1"},
   },
 });
 export const gridElLoader = [gridEl, css({minHeight: "150px"})].join();

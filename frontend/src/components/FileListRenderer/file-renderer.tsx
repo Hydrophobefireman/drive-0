@@ -30,6 +30,7 @@ import {
   LockClosedIcon,
   TrashIcon,
 } from "@hydrophobefireman/kit/icons";
+import {Checkbox} from "@hydrophobefireman/kit/input";
 import {Text} from "@hydrophobefireman/kit/text";
 import {useEffect, useMemo, useRef, useState} from "@hydrophobefireman/ui-lib";
 
@@ -74,7 +75,9 @@ export function FileRenderer({
     setActive(false);
   }
   function toggleMenu(e: JSX.TargetedMouseEvent<HTMLElement>) {
-    if (isSelected) return;
+    if (isSelected) {
+      return;
+    }
     e.stopPropagation();
     setActive((x) => !x);
   }
@@ -101,7 +104,11 @@ export function FileRenderer({
   }, [obj]);
   useMount(() => () => closeMenu);
   if (!user) return;
-
+  const checkboxClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    delegate(e);
+    closeMenu();
+  };
   return (
     <div
       data-selected={isSelected}
@@ -109,7 +116,38 @@ export function FileRenderer({
       onClick={delegate}
       class={fstate === "deleting" ? gridElDeleteState : gridEl}
     >
-      <Box horizontal="right">
+      <Box
+        style={{"--kit-justify-content": "space-between"}}
+        row={true}
+        horizontal="right"
+        class={css({paddingLeft: ".25rem", paddingRight: ".25rem"})}
+      >
+        {
+          <button
+            aria-label="uncheck"
+            data-index={index}
+            style={
+              isSelected
+                ? {"--opacity-desktop": "1", "--button-bg": "#00000078"}
+                : {"--button-bg": "transparent", "--opacity-desktop": "0"}
+            }
+            class={[
+              menuButton,
+              css({
+                "--span-margin": 0,
+                "--pt": 0,
+                "--pl": 0,
+                "--pb": 0,
+                "--radius": "0",
+                "--b-padding": ".5rem",
+              } as any),
+            ]}
+            data-is="checkbox"
+            onClick={checkboxClick}
+          >
+            <SelectionCheckbox active={active} isSelected={isSelected} />
+          </button>
+        }
         <button
           aria-label="Menu"
           class={menuButton}
@@ -152,6 +190,40 @@ export function FileRenderer({
         >
           Download
         </Button>
+
+        {/* <button
+          data-is="checkbox"
+          data-index={index}
+          class={css({
+            width: "100%",
+            transition: "var(--kit-transition)",
+            pseudo: {
+              ":hover": {
+                background: "var(--kit-shade-2)",
+              },
+              ":focus-visible": {
+                background: "var(--kit-shade-2)",
+              },
+            },
+          })}
+          onClick={checkboxClick}
+        >
+          <SelectionCheckbox active={active} isSelected={isSelected}>
+            Select
+          </SelectionCheckbox>
+        </button> */}
+
+        {/* <Button
+          tabIndex={active ? 0 : -1}
+          onClick={download}
+          variant="custom"
+          data-index={index}
+          class={actionButton}
+          label="Download file"
+          prefix={<DownloadIcon />}
+        >
+          
+        </Button> */}
       </div>
       {obj.customMetadata.upload.preview ? (
         <OptimizedPreview
@@ -261,5 +333,42 @@ function OptimizedPreview({
       meta={preview.meta}
       url={imagePreviewDownloadRoute(user, preview.id)}
     />
+  );
+}
+
+function SelectionCheckbox({
+  active,
+  isSelected,
+  children,
+}: {
+  active: boolean;
+  isSelected: boolean;
+  children?: any;
+}) {
+  return (
+    <Checkbox
+      tabIndex={active ? 0 : -1}
+      boxClass={css({
+        pointerEvents: "none",
+        paddingLeft: "var(--pl,1.1rem)",
+        paddingTop: "var(--pt,.25rem)",
+        paddingBottom: "var(--pb,.25rem)",
+        "--kit-border": "var(--kit-theme-fg)",
+
+        pseudo: {
+          " .kit-cb-icon-container, .kit-radio-span": {
+            border: "2px solid var(--kit-border)",
+            margin: "var(--span-margin,0 5px 0 0)",
+          },
+        },
+      } as any)}
+      boxStyle={{
+        "--kit-justify-content": "flex-start",
+      }}
+      checked={isSelected}
+      onCheck={null}
+    >
+      {children}
+    </Checkbox>
   );
 }
