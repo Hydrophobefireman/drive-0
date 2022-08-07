@@ -21,11 +21,11 @@ export function GetAccKey({setKey}: {setKey(k: string): void}) {
         <Modal.Title>Enter Account Key</Modal.Title>
         <Text>
           Your account key is needed to encrypt and decrypt your files for{" "}
-          {(
+          {
             <span class={css({textDecoration: "underline"})}>
-              {client.getState()?.user}
+              {client.getState()?.user ?? "your account"}
             </span>
-          ) ?? "your account"}
+          }
         </Text>
         <Form
           onSubmit={() => {

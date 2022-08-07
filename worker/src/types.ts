@@ -4,6 +4,9 @@ export interface Env {
   CHECK: "yes" | "no";
   AUTH: KVNamespace;
   JWT_SIGNING_KEY: string;
+  S3_ACCESS_KEY_ID: string;
+  S3_ACCESS_KEY_SECRET: string;
+  ACCOUNT_ID: string;
 }
 
 export interface UserType {

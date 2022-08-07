@@ -234,9 +234,14 @@ function EncryptedFilePreview({accKey, meta, url}: EncrProps) {
     return <EncryptedImagePreview accKey={accKey} meta={meta.enc} url={url} />;
   }
   return (
-    <LockClosedIcon
-      class={css({display: "block", margin: "auto"})}
-      size={100}
+    <Img
+      remount
+      class={css({display: "block", margin: "auto", objectFit: "cover"})}
+      height={100}
+      width={100}
+      src={`https://icons.api.hpfm.dev/api/vs?mode=mime&name=${encodeURIComponent(
+        ct
+      )}`}
     />
   );
 }

@@ -83,7 +83,7 @@ export function FileListRenderer({
   const {show} = useAlerts();
 
   const [renderCount, setRenderCount] = useState<10 | 15 | 20 | 50>(10);
-  if (!files)
+  if (!files) {
     return (
       <div style={{gap: "10px"}} class={gridRoot}>
         {Array.from({length: 5}).map(() => (
@@ -93,6 +93,7 @@ export function FileListRenderer({
         ))}
       </div>
     );
+  }
 
   function handleDelete() {
     setListState("delete");
@@ -109,7 +110,7 @@ export function FileListRenderer({
       clearSelection();
       if (error) {
         show({
-          content: `Could not delete files`,
+          content: "Could not delete files",
           type: "error",
         });
       }
@@ -160,7 +161,7 @@ export function FileListRenderer({
                 meta={selectedFile.customMetadata.upload}
                 url={getFileFromKeyRoute(selectedFile.key)}
               >
-                <Box row>
+                <Box row={true}>
                   <TextButton
                     mode="secondary"
                     variant="shadow"
