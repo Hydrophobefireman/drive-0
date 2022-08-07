@@ -278,7 +278,19 @@ export function FileRenderer({
           backdropFilter: "brightness(0.5)",
         })}
       >
-        {obj.customMetadata.upload.enc && "🔒"} {obj.customMetadata.upload.name}
+        <span
+          class={css({
+            maxWidth: "100%",
+            textOverflow: "ellipsis",
+            height: "2rem",
+            textAlign: "left",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+          })}
+        >
+          {obj.customMetadata.upload.enc ? "🔒" : " "}
+          {obj.customMetadata.upload.name}
+        </span>
       </Text.div>
     </div>
   );
