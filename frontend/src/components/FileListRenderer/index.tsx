@@ -257,7 +257,7 @@ export function FileListRenderer({
           atOnce={renderCount}
           items={files.objects}
           render={render}
-          renderNextItems
+          
           nextItemCount={10}
           nextItemsClass={css({display: "none"})}
         />
