@@ -3,16 +3,16 @@ main = "src/index.ts"
 compatibility_date = "2022-05-18"
 
 kv_namespaces = [
-    { binding = "AUTH", id = "5146104b321949678119c9e09bc8e701", preview_id = "1de9157f13464941b26f19ebe37b7b75" },
+    { binding = "AUTH", id = "5146104b321949678119c9e09bc8e701", preview_id = "5146104b321949678119c9e09bc8e701" },
 ]
 
 
 [[r2_buckets]]
 binding = "B_GALLERY"
 bucket_name = "gallery-v0"
-preview_bucket_name = "gallery-v0-preview"
+preview_bucket_name = "gallery-v0"
 
 [[r2_buckets]]
 binding = "B_PREVIEWS"
 bucket_name = "previews"
-preview_bucket_name = "previews-dev"
+preview_bucket_name = "previews"

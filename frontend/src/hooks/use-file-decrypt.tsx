@@ -5,7 +5,12 @@ import {dec} from "@/crypto/string_enc";
 import {requests} from "@/util/bridge";
 import {_util} from "@hydrophobefireman/kit";
 import {useAlerts} from "@hydrophobefireman/kit/alerts";
-import {useCallback, useEffect, useState} from "@hydrophobefireman/ui-lib";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "@hydrophobefireman/ui-lib";
 
 export const NEEDS_BLUR_HASH = null;
 export const previewCache = new Map<string, Blob>();
@@ -17,7 +22,8 @@ export interface BlurHashHookProps {
 export function useBlurHashDecode({accKey, meta}: BlurHashHookProps) {
   const [hash, setHash] = useState<string | null>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    setHash(null);
     setHash(() => {
       if (!meta) return null;
       const parsedMeta = JSON.parse(meta);
@@ -43,6 +49,9 @@ export function useBlurHashDecode({accKey, meta}: BlurHashHookProps) {
         return null;
       }
     });
+    return () => {
+      setHash(null);
+    };
   }, [meta, accKey]);
   return hash;
 }
@@ -70,13 +79,14 @@ export function useFileDecrypt({
   );
 
   useEffect(() => {
+    setBlob(null);
     const key = `${url}::${meta}::${accKey}`;
     if (cache && previewCache.has(key)) {
-      setBlob(previewCache.get(key));
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => setBlob(previewCache.get(key)))
+      );
       return;
     }
-    setBlob(null);
-
     const {controller, result} = download(url);
 
     (async () => {
@@ -90,7 +100,7 @@ export function useFileDecrypt({
       if (!(ret instanceof ArrayBuffer)) return;
       const parsed = JSON.parse(meta);
       const res = await decrypt({meta, encryptedBuf: ret}, accKey);
-      if (res.error) {
+      if ("error" in res) {
         setProgress(0);
         return show({content: res.error, type: "error"});
       }

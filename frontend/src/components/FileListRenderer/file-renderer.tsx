@@ -308,9 +308,18 @@ function EncryptedImagePreview({
   const {blob} = useFileDecrypt({url, meta, accKey, cache: true});
   const hash = useBlurHashDecode({accKey, meta});
   const src = useObjectUrl(blob);
-
+  // console.log("ok");
   return blob && src ? (
-    <div style={{backgroundImage: `url("${src}")`}} class={imgPreview} />
+    <Box
+      style={{backgroundImage: `url("${src}")`}}
+      class={[
+        imgPreview,
+        css({
+          animation: "soft-fade-in 0.5s ease",
+          animationFillMode: "forwards",
+        }),
+      ]}
+    />
   ) : hash && hash !== NEEDS_BLUR_HASH ? (
     <div
       data-is="blur-hash"

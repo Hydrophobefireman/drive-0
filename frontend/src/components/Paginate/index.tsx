@@ -13,6 +13,9 @@ interface PaginateProps<T> {
   previousText?: string;
   render(item: T, i: number): Renderable;
   listParentClass?: string;
+  nextItemsClass?: string;
+  renderNextItems?: boolean;
+  nextItemCount?: number;
 }
 export function Paginate<T>({
   atOnce,
@@ -26,8 +29,12 @@ export function Paginate<T>({
   previousButtonClass,
   previousText,
   listParentClass,
+  nextItemsClass,
+  renderNextItems,
+  nextItemCount,
   render,
 }: PaginateProps<T>) {
+  nextItemCount ??= atOnce;
   const itemLength = items.length;
   const [index, setIndex] = useState(0);
   const endIndex = index + atOnce;
@@ -35,6 +42,12 @@ export function Paginate<T>({
   const hasMore = endIndex < itemLength;
   useEffect(() => setIndex(0), [items]);
   const list = useCurrentItems(items, render, index, endIndex);
+  const nextItems = useCurrentItems(
+    items,
+    render,
+    endIndex,
+    endIndex + nextItemCount
+  );
   function next() {
     setIndex(Math.min(itemLength - 1, index + atOnce));
   }
@@ -73,6 +86,7 @@ export function Paginate<T>({
     <div class={containerClass}>
       {buttons}
       <div class={listParentClass}>{list}</div>
+      {renderNextItems && <div class={nextItemsClass}>{nextItems}</div>}
       {dualButtons && buttons}
     </div>
   );

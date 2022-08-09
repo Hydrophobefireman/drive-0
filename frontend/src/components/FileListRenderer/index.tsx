@@ -244,7 +244,7 @@ export function FileListRenderer({
         <Select
           label="Show"
           options={renderCountOptions}
-          setValue={(x) => setRenderCount(x as any)}
+          setValue={(x) => setRenderCount(+x as any)}
           value={renderCount}
         />
       </Box>
@@ -257,6 +257,9 @@ export function FileListRenderer({
           atOnce={renderCount}
           items={files.objects}
           render={render}
+          renderNextItems
+          nextItemCount={10}
+          nextItemsClass={css({display: "none"})}
         />
       </div>
     </>

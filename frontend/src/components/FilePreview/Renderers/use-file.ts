@@ -1,13 +1,15 @@
 import {blobToArrayBuffer} from "@hydrophobefireman/j-utils";
-import {useEffect, useState} from "@hydrophobefireman/ui-lib";
+import {useEffect, useLayoutEffect, useState} from "@hydrophobefireman/ui-lib";
 
 export function useObjectUrl(file: Blob) {
   const [src, setSrc] = useState<string>();
-  useEffect(() => {
+  useLayoutEffect(() => {
+    setSrc(null);
     if (!file) return;
     const url = URL.createObjectURL(file);
     setSrc(url);
     return () => {
+      setSrc(null);
       URL.revokeObjectURL(url);
     };
   }, [file]);
